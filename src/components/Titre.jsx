@@ -1,5 +1,5 @@
 import React from 'react'
-import { Row, Col, Button } from 'react-bootstrap';
+import { Row, Col, Button,Form } from 'react-bootstrap';
 function Titre({ rapportLe, setRapportLe }) {
   const heures = rapportLe?.split("T")[1]
   const date = rapportLe?.split("T")[0]
@@ -7,12 +7,13 @@ function Titre({ rapportLe, setRapportLe }) {
   
   
   return (
-    <Row className='my-5 '>
-      <Col className='bg-dark rounded'>
+    <Row className='   rounded-3 px-3  my-1'>
+      <Col className=' card rounded'>
        <div style={{display : "flex" , justifyContent : "space-between", alignItems : "center"}}>
-         <h3>
-          <label className='form-label text-white' htmlFor="date">Rapport CTM Le : <i className='  px-3 rounded'> {rapportLe ? date : ""}</i></label>
-          <input
+         <h5>
+          <label className='form-label ' htmlFor="date"><i className="bi bi-safe-fill"></i> Rapport CTM Le : <i className='  px-3 rounded'> {rapportLe ? date : ""}</i></label>
+          <Form.Control
+          size='sm'
             id="date"
             className="form-control"
             value={rapportLe}
@@ -20,9 +21,10 @@ function Titre({ rapportLe, setRapportLe }) {
             type="datetime-local"
             name="rapportLe"
           />
-        </h3>
+        </h5>
 
-        <h4 className='bg-primary text-white p-2' style={{borderRadius : "50px"}}> ⏱ {rapportLe && heures}</h4>
+        <h6 className='btnsuccess text-white px-2 py-1' style={{borderRadius : "50px"}}> <i className="bi bi-clock-history"></i> { rapportLe && heures.replace(":"," : ")}</h6>
+
 
        </div>
        

@@ -3,6 +3,7 @@ import Formulaire from './components/Form'
 import { Container } from 'react-bootstrap'
 import Titre from './components/Titre'
 import Liste from './components/Liste'
+import './App.css'
 
 function App() {
 
@@ -121,8 +122,8 @@ function App() {
   }, [allStock])
 
   return (
-    <div className=' p-1 shadow'>
-      <Container className='bg-secondary text-white'>
+    <div className=' p-1'>
+      <Container fluid  className='bordure rounded-5 mt-2 py-2 text-white'>
 
         <Titre
           rapportLe={rapportLe}

@@ -4,6 +4,7 @@ import { Row, Col } from 'react-bootstrap'
 import { useState } from 'react'
 import Swal from 'sweetalert2'
 
+
 function Formulaire({
   nom_detecteur,
   sites,
@@ -95,19 +96,20 @@ function Formulaire({
   }
 
   return (
-    <Row>
-      <Col>
+    <Row className=' p-3 rounded-3 mb-1'>
+      <Col className="">
 
         <Form >
           <fieldset>
 
             {/* SITE */}
-            <Form.Group className="mb-3">
+            <Form.Group className="mb-1">
               <Form.Label className="fw-bold">
                 Banque :
               </Form.Label>
 
               <Form.Select
+              size='sm'
               disabled={isFinish}
                 value={stock_sites}
                 onChange={e => setStocksite(e.target.value)}
@@ -125,19 +127,20 @@ function Formulaire({
 
               <small>
                 Vous avez sélectionné :
-                <i className="text-primary fw-bold ms-1">
+                <small className="text-primary ms-1">
                   {stock_sites || "?"}
-                </i>
+                </small>
               </small>
             </Form.Group>
 
             {/* DETECTEUR */}
-            <Form.Group className="mb-3">
-              <Form.Label className="fw-bold">
+            <Form.Group className="mb-1">
+              <Form.Label className="">
                 Détecteur :
               </Form.Label>
 
               <Form.Select
+              size='sm'
                 value={stock_detecteur}
                 onChange={e => setStockdetecteur(e.target.value)}
               >
@@ -160,7 +163,7 @@ function Formulaire({
 
               <small>
                 Vous avez sélectionné :
-                <i className="text-primary fw-bold text-uppercase ms-1">
+                <i className="text-primary  text-uppercase ms-1">
                   {stock_detecteur || "?"}
                 </i>
               </small>
@@ -189,7 +192,7 @@ function Formulaire({
             </Form.Group> */}
 
             {/* CHECKBOX */}
-            <Form.Group className="mb-3">
+            <Form.Group className="mb-1">
               <Form.Check
                 checked={isFinish}
                 onChange={e => setIsfinish(e.target.checked)}
@@ -200,18 +203,20 @@ function Formulaire({
 
             {/* BOUTON */}
             {!isEdit ? <Button
-              className="btn btn-primary"
+              className=" btnprimary"
               disabled={!isFinish}
               type="submit"
               onClick={handlerSubmit}
+              size='sm'
             >
-              Ajouter
+              Ajouter <i className="bi bi-plus-lg"></i>
             </Button> : <Button
-              className="btn btn-primary"
+              className="btn btn-primary btnmodifier"
               disabled={!isFinish}
               type="button"
               variant='success'
               onClick={handleModif}
+              size='sm'
             >
               Modifier
             </Button>}

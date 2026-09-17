@@ -307,24 +307,24 @@ function Liste({
 
 
   return (
-    <Row className="mt-3">
-      <Col>
+    <Row className="   p-2 ">
+      <Col className="rounded-3" style={{borderTop : "1px solid #164B7A"}}>
 
-        <div className='bg-dark p-2' style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <h5 className=' text-white '>Titre : {titre_export.replace(/T\d{2}([:_])\d{2}.*$/, "")}</h5>
-          <Button disabled={allStock.length == 0} variant='success' style={{ cursor: "pointer" }} onClick={handleExortExcel}> Exporter en Ecxel</Button></div>
+        <div className='py-1' style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <h6 className='  '><i className="bi bi-bank"></i> {titre_export.replace(/T\d{2}([:_])\d{2}.*$/, "")}</h6>
+          <Button className=' btnsuccess' size='sm' disabled={allStock.length == 0}  style={{ cursor: "pointer" }} onClick={handleExortExcel}>Ecxel <i className="bi bi-file-earmark-spreadsheet"></i></Button></div>
 
-        <div style={{ maxHeight: "176px ", overflowY: "scroll", scrollbarWidth: "thin" }}>
+        <div  style={{ maxHeight: "170px ", overflowY: "scroll", scrollbarWidth: "thin" }}>
           <div className=' table-responsive'>
-            <table className="table table-bordered table-hover table-striped ">
+            <table className="table table-light p-2 table-bordered table-hover table-striped table-sm text-center">
               <thead>
                 <tr>
-                  <th>Acct</th>
-                  <th>CallNO</th>
-                  <th>Detector</th>
-                  <th>AlarmInfo</th>
-                  <th>AlarmTime</th>
-                  <th>HandleRemark</th>
+                  <th scope='col'>Acct</th>
+                  <th scope='col'>CallNO</th>
+                  <th scope='col'>Detector</th>
+                  <th scope='col'>AlarmInfo</th>
+                  <th scope='col'>AlarmTime</th>
+                  <th scope='col'>HandleRemark</th>
                   <th>Action</th>
 
 
@@ -335,7 +335,7 @@ function Liste({
                 {allStock.length === 0 ? (<tr><td className='text-center text-danger' colSpan={7}>Aucun element</td></tr>) : allStock.map((e, b) => (
                   <tr key={b}>
 
-                    <td>{e.acct}</td>
+                    <th scope='row'>{e.acct}</th>
 
                     <td>{e.numeros}</td>
 
@@ -353,8 +353,8 @@ function Liste({
 
                     <td></td>
                     <td className='d-flex gap-2'>
-                      <Button variant='danger' onClick={() => handleSuppr(b)}><i className="bi bi-trash"></i></Button>
-                      <Button  variant='success text-white' onClick={() => handleEdit(b)}><i className="bi bi-pencil-square"></i></Button>
+                      <Button size='sm' className='btndanger' onClick={() => handleSuppr(b)}><i className="bi bi-trash"></i></Button>
+                      <Button size='sm' className='btnmodifier' onClick={() => handleEdit(b)}><i className="bi bi-pencil-square"></i></Button>
                     </td>
 
                   </tr>

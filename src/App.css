@@ -1,0 +1,53 @@
+:root {
+  --bg: #061A33;       /* 🌑 Bleu nuit très sombre : fond principal du site */
+  --card: #0D2747;     /* 🔵 Bleu marine : cartes, panneaux et sections */
+  --border: #164B7A;   /* 🔷 Bleu moyen : bordures et séparations */
+  --primaire: #00B8E6;  /* 🩵 Cyan vif : boutons principaux, titres et accents */
+  --successs: #16C7B7;  /* 🟢 Turquoise : bouton Excel et actions positives */
+  --input: #F4F8FC;    /* ⚪ Blanc légèrement bleuté : champs de formulaire */
+  --danger: #F43F5E;   /* 🔴 Rouge : bouton supprimer */
+  --text: #F8FAFC;     /* ⚪ Blanc : texte principal sur fond sombre */
+}
+
+body {
+  background-color: var(--bg) !important; /* Utilise le bleu nuit comme fond */
+  color: var(--text) !important;           /* Utilise le blanc pour le texte */
+   
+}
+
+.card {
+  background-color: var(--card) !important; /* Utilise le bleu marine pour les cartes */
+  border: 1px solid var(--border) !important; /* Ajoute une bordure bleu moyen */
+  color: var(--successs) !important; /* Assure que le texte à l'intérieur des cartes est blanc */
+
+}
+.bordure {
+  border: 1px solid var(--border) !important; /* Ajoute une bordure bleu moyen */
+}
+
+.btnAjouter {
+  background-color: var(--successs) !important; /* Utilise le cyan pour le bouton Ajouter */
+  color: var(--text) !important; /* Assure que le texte du bouton est blanc */
+}
+
+ select, textarea {
+  background-color: var(--input) !important; /* Utilise le blanc légèrement bleuté pour les champs de formulaire */
+  color: var(--bg) !important; /* Assure que le texte à l'intérieur des champs est sombre */
+  border: 1px solid var(--border) !important; /* Ajoute une bordure bleu moyen aux champs */
+}
+
+.btnprimary {
+  background-color: var(--primaire) !important; /* Utilise le cyan pour le bouton principal */
+}
+
+.btnsuccess {
+  background-color: var(--successs) !important; /* Utilise le turquoise pour Excel */
+}
+
+.btndanger {
+  background-color: var(--danger) !important; /* Utilise le rouge pour supprimer */
+}
+.btnmodifier {
+  background-color: var(--primaire) !important; /* Utilise le turquoise pour le bouton Modifier */
+  color: var(--text) !important; /* Assure que le texte du bouton est blanc */
+}
