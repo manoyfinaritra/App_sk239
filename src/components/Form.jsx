@@ -1,7 +1,6 @@
 import Button from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form'
 import { Row, Col } from 'react-bootstrap'
-import { useState } from 'react'
 import Swal from 'sweetalert2'
 
 
@@ -22,9 +21,6 @@ function Formulaire({
   allStock,
   idModif
 }) {
-
-  const [stockdate, setStockdate] = useState("")
-
 
   // Générer les codes : c1, c2, ..., b1, b2, ...
   const code_detecteur = []
@@ -56,7 +52,7 @@ function Formulaire({
     const nouvelleValeur = {
       ...result,
       detct: stock_detecteur,
-      date: stockdate || rapportLe
+      date: rapportLe
     }
 
     // Ajouter la nouvelle soumission à l'historique
@@ -96,14 +92,18 @@ function Formulaire({
   }
 
   return (
-    <Row className=' p-3 rounded-3 mb-1'>
-      <Col className="">
+    <Row className='mb-1'>
+      <Col>
 
-        <Form >
+        <Form className="section-card">
           <fieldset>
+            <div className='d-flex align-items-center gap-2 mb-3'>
+              <i className='bi bi-plus-circle-fill text-info'></i>
+              <div><h2 className='section-title mb-0'>Nouvelle alarme</h2><p className='section-subtitle mb-0'>Renseignez le site et le détecteur concerné.</p></div>
+            </div>
 
             {/* SITE */}
-            <Form.Group className="mb-1">
+            <Form.Group className="mb-3">
               <Form.Label className="fw-bold">
                 Banque :
               </Form.Label>
@@ -125,17 +125,12 @@ function Formulaire({
                   ))}
               </Form.Select>
 
-              <small>
-                Vous avez sélectionné :
-                <small className="text-primary ms-1">
-                  {stock_sites || "?"}
-                </small>
-              </small>
+              <div className="selection-note mt-2">Site sélectionné : <strong>{stock_sites || "Aucun"}</strong></div>
             </Form.Group>
 
             {/* DETECTEUR */}
-            <Form.Group className="mb-1">
-              <Form.Label className="">
+            <Form.Group className="mb-3">
+              <Form.Label>
                 Détecteur :
               </Form.Label>
 
@@ -161,12 +156,7 @@ function Formulaire({
                   ))}
               </Form.Select>
 
-              <small>
-                Vous avez sélectionné :
-                <i className="text-primary  text-uppercase ms-1">
-                  {stock_detecteur || "?"}
-                </i>
-              </small>
+              <div className="selection-note mt-2">Détecteur sélectionné : <strong className='text-uppercase'>{stock_detecteur || "Aucun"}</strong></div>
             </Form.Group>
 
             {/* DATE */}
@@ -192,7 +182,7 @@ function Formulaire({
             </Form.Group> */}
 
             {/* CHECKBOX */}
-            <Form.Group className="mb-1">
+            <Form.Group className="mb-3">
               <Form.Check
                 checked={isFinish}
                 onChange={e => setIsfinish(e.target.checked)}
@@ -209,7 +199,7 @@ function Formulaire({
               onClick={handlerSubmit}
               size='sm'
             >
-              Ajouter <i className="bi bi-plus-lg"></i>
+              Ajouter au rapport <i className="bi bi-plus-lg ms-1"></i>
             </Button> : <Button
               className="btn btn-primary btnmodifier"
               disabled={!isFinish}

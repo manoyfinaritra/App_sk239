@@ -1,33 +1,23 @@
-import React from 'react'
-import { Row, Col, Button,Form } from 'react-bootstrap';
+import { Row, Col, Form } from 'react-bootstrap';
 function Titre({ rapportLe, setRapportLe }) {
-  const heures = rapportLe?.split("T")[1]
-  const date = rapportLe?.split("T")[0]
- 
-  
-  
+  const [date = '', heures = ''] = rapportLe?.split('T') || []
   return (
-    <Row className='   rounded-3 px-3  my-1'>
-      <Col className=' card rounded'>
-       <div style={{display : "flex" , justifyContent : "space-between", alignItems : "center"}}>
-         <h5>
-          <label className='form-label ' htmlFor="date"><i className="bi bi-safe-fill"></i> Rapport CTM Le : <i className='  px-3 rounded'> {rapportLe ? date : ""}</i></label>
+    <Row className='g-3 mb-1'>
+      <Col>
+       <section className='section-card d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3'>
+        <div><div className='d-flex align-items-center gap-2 mb-1'><i className="bi bi-shield-check fs-4 text-info"></i><h1 className='report-title h5 mb-0'>Rapport CTM</h1></div><p className='section-subtitle mb-0'>Centralisez les alarmes et préparez l’export Excel.</p></div>
+        <div className='d-flex flex-column flex-sm-row align-items-sm-center gap-2'>
+          <div><label className='visually-hidden' htmlFor="date">Date et heure du rapport</label>
           <Form.Control
-          size='sm'
             id="date"
-            className="form-control"
+            aria-label="Date et heure du rapport"
             value={rapportLe}
             onChange={e => setRapportLe(e.target.value)}
             type="datetime-local"
             name="rapportLe"
           />
-        </h5>
-
-        <h6 className='btnsuccess text-white px-2 py-1' style={{borderRadius : "50px"}}> <i className="bi bi-clock-history"></i> { rapportLe && heures.replace(":"," : ")}</h6>
-
-
-       </div>
-       
+          </div><div className='time-badge rounded-pill px-3 py-2 text-nowrap small'><i className="bi bi-calendar3 me-2"></i>{date || 'Date non définie'}{heures && ` · ${heures}`}</div>
+        </div></section>
       </Col>
     </Row>
   )

@@ -1,53 +1,12 @@
-:root {
-  --bg: #061A33;       /* 🌑 Bleu nuit très sombre : fond principal du site */
-  --card: #0D2747;     /* 🔵 Bleu marine : cartes, panneaux et sections */
-  --border: #164B7A;   /* 🔷 Bleu moyen : bordures et séparations */
-  --primaire: #00B8E6;  /* 🩵 Cyan vif : boutons principaux, titres et accents */
-  --successs: #16C7B7;  /* 🟢 Turquoise : bouton Excel et actions positives */
-  --input: #F4F8FC;    /* ⚪ Blanc légèrement bleuté : champs de formulaire */
-  --danger: #F43F5E;   /* 🔴 Rouge : bouton supprimer */
-  --text: #F8FAFC;     /* ⚪ Blanc : texte principal sur fond sombre */
-}
+:root { --bg:#07192f; --surface:#102947; --surface-soft:#17375d; --border:#285783; --primary:#20c7ed; --success:#1fc6a5; --danger:#f0526b; --text:#f5f8fc; --muted:#b6c8dc; }
+body { min-width:320px; background:radial-gradient(circle at 15% 0%,#16416b 0,var(--bg) 38rem) fixed; color:var(--text); }
+.dashboard-layout { display:flex; min-height:100vh; }.app-shell { flex:1; max-width:1280px; margin:auto; }.app-panel { background:rgba(7,25,47,.8); border:1px solid rgba(73,143,195,.42); box-shadow:0 22px 60px rgba(0,0,0,.25); }.dashboard-sidebar { position:sticky; top:0; display:flex; flex-direction:column; width:248px; height:100vh; flex:none; padding:1.35rem .85rem; background:rgba(5,19,37,.96); border-right:1px solid rgba(73,143,195,.38); }.sidebar-brand { display:flex; align-items:center; gap:.7rem; padding:.25rem .6rem 1.8rem; color:#f0faff; font-size:1rem; font-weight:800; letter-spacing:.04em; }.sidebar-brand small { display:block; color:#70cfe8; font-size:.57rem; letter-spacing:.18em; }.brand-icon { display:grid; place-items:center; width:2.25rem; height:2.25rem; border-radius:.65rem; background:linear-gradient(135deg,#21c9ed,#177cae); color:#06223d; font-size:1.2rem; }.sidebar-label { margin:0 .6rem .5rem; color:#7792af; font-size:.64rem; font-weight:750; letter-spacing:.1em; }.sidebar-nav { display:grid; gap:.3rem; }.sidebar-link { display:flex; align-items:center; gap:.7rem; width:100%; padding:.72rem .75rem; border:0; border-radius:.55rem; background:transparent; color:#c4d4e4; font-size:.88rem; text-align:left; transition:background .15s,color .15s; }.sidebar-link:hover,.sidebar-link.active { background:#16446d; color:#fff; }.sidebar-link i { font-size:1rem; }.sidebar-link b { margin-left:auto; min-width:1.35rem; padding:.08rem .35rem; border-radius:99px; background:#2d719b; color:#e8faff; font-size:.7rem; text-align:center; }.sidebar-bottom { margin-top:auto; }.report-modal .modal-content { border:0; border-radius:1rem; overflow:hidden; }.report-modal .modal-header { background:#102947; color:#fff; }.report-modal .btn-close { filter:invert(1); }.modal-subtitle { color:#a9c4dc; font-size:.8rem; }.history-filters { display:flex; align-items:end; flex-wrap:wrap; gap:.75rem; padding:1rem; border-radius:.7rem; background:#edf5fb; }.history-filters label { display:block; margin-bottom:.25rem; color:#3d5c79; font-size:.76rem; font-weight:700; }.history-filters input { min-height:2.2rem; padding:.35rem .55rem; border:1px solid #bfd3e4; border-radius:.45rem; color:#173451; }.history-result { padding-bottom:.4rem; color:#50708e; font-size:.84rem; font-weight:600; }.site-report-list { display:grid; gap:1rem; }.site-report-card { overflow:hidden; border:1px solid #d8e5ef; border-radius:.75rem; }.site-report-title { display:flex; justify-content:space-between; gap:1rem; padding:.75rem 1rem; background:#e8f3fa; color:#173d60; font-weight:700; }.site-report-title span { color:#49806e; font-size:.78rem; font-weight:600; }.history-table-wrap { overflow:auto; }.history-table { min-width:680px; margin:0; }.history-table thead th { background:#f6fafd; color:#3d5c79; font-size:.74rem; text-transform:uppercase; letter-spacing:.04em; }.history-empty { padding:2.5rem 1rem; color:#63758d; text-align:center; }.history-empty i { display:block; margin-bottom:.5rem; color:#8ea7ba; font-size:2rem; }.history-empty p { margin:0; }
+.card,.section-card { background:linear-gradient(145deg,rgba(23,55,93,.96),rgba(13,38,68,.96)); border:1px solid var(--border); color:var(--text); box-shadow:0 10px 25px rgba(0,0,0,.12); }
+.section-card { border-radius:1rem; padding:1.1rem; }.section-title { color:var(--text); font-size:1rem; font-weight:700; }.section-subtitle,.selection-note { color:var(--muted); font-size:.82rem; }.selection-note strong { color:var(--primary); font-weight:600; }
+.report-title { letter-spacing:-.02em; }.time-badge { background:rgba(31,198,165,.15); border:1px solid rgba(31,198,165,.45); color:#a6f4e3; }
+.form-label { color:var(--text); font-size:.88rem; font-weight:600; margin-bottom:.38rem; }.form-select,.form-control { background-color:#f7fbff!important; border:1px solid #b9d0e5!important; border-radius:.6rem; color:#10233c!important; min-height:2.45rem; }.form-select:focus,.form-control:focus { border-color:var(--primary)!important; box-shadow:0 0 0 .2rem rgba(32,199,237,.2); }.form-check-input:checked { background-color:var(--success); border-color:var(--success); }.form-check-label { color:var(--muted); font-size:.84rem; }
+.btn { border-radius:.58rem; font-weight:650; border:0; transition:transform .16s ease,filter .16s ease; }.btn:hover:not(:disabled) { filter:brightness(1.08); transform:translateY(-1px); }.btnprimary,.btnmodifier { background-color:var(--primary)!important; color:#062038!important; }.btnsuccess { background-color:var(--success)!important; color:#042d2a!important; }.btndanger { background-color:var(--danger)!important; color:#fff!important; }.btn:disabled { opacity:.48; }
+.report-table-wrap { max-height:300px; overflow:auto; border:1px solid var(--border); border-radius:.75rem; }.report-table { margin-bottom:0; min-width:760px; }.report-table thead th { background:#0b3156; color:#dff8ff; border-color:#285783; font-size:.78rem; letter-spacing:.03em; text-transform:uppercase; white-space:nowrap; }.report-table td,.report-table th { border-color:#cbd8e5; vertical-align:middle; }.report-table tbody td,.report-table tbody th { color:#172e4b; }.empty-state { color:#63758d!important; padding:2rem!important; }.table-actions { display:flex; justify-content:center; gap:.4rem; }
+@media (max-width:767.98px) { .dashboard-layout { display:block; }.dashboard-sidebar { position:static; flex-direction:row; align-items:center; width:100%; height:auto; min-height:0; padding:.65rem; gap:.6rem; border-right:0; border-bottom:1px solid rgba(73,143,195,.38); }.sidebar-brand { padding:0 .35rem; white-space:nowrap; }.sidebar-nav { display:flex; flex:1; gap:.25rem; }.sidebar-link { justify-content:center; padding:.55rem; }.sidebar-link span { display:none; }.sidebar-link b { margin-left:0; }.sidebar-bottom { margin:0; }.sidebar-label { display:none; } .app-shell { padding:.65rem!important; }.section-card { padding:.9rem; }.report-title { font-size:1rem; } }
 
-body {
-  background-color: var(--bg) !important; /* Utilise le bleu nuit comme fond */
-  color: var(--text) !important;           /* Utilise le blanc pour le texte */
-   
-}
-
-.card {
-  background-color: var(--card) !important; /* Utilise le bleu marine pour les cartes */
-  border: 1px solid var(--border) !important; /* Ajoute une bordure bleu moyen */
-  color: var(--successs) !important; /* Assure que le texte à l'intérieur des cartes est blanc */
-
-}
-.bordure {
-  border: 1px solid var(--border) !important; /* Ajoute une bordure bleu moyen */
-}
-
-.btnAjouter {
-  background-color: var(--successs) !important; /* Utilise le cyan pour le bouton Ajouter */
-  color: var(--text) !important; /* Assure que le texte du bouton est blanc */
-}
-
- select, textarea {
-  background-color: var(--input) !important; /* Utilise le blanc légèrement bleuté pour les champs de formulaire */
-  color: var(--bg) !important; /* Assure que le texte à l'intérieur des champs est sombre */
-  border: 1px solid var(--border) !important; /* Ajoute une bordure bleu moyen aux champs */
-}
-
-.btnprimary {
-  background-color: var(--primaire) !important; /* Utilise le cyan pour le bouton principal */
-}
-
-.btnsuccess {
-  background-color: var(--successs) !important; /* Utilise le turquoise pour Excel */
-}
-
-.btndanger {
-  background-color: var(--danger) !important; /* Utilise le rouge pour supprimer */
-}
-.btnmodifier {
-  background-color: var(--primaire) !important; /* Utilise le turquoise pour le bouton Modifier */
-  color: var(--text) !important; /* Assure que le texte du bouton est blanc */
-}
+body.theme-light { --bg:#edf5fc; --text:#112a45; --muted:#58708a; background:linear-gradient(135deg,#f9fcff,#dcecf9) fixed; color:var(--text); } body.theme-light .app-panel { background:rgba(255,255,255,.78); border-color:#b7d0e6; } body.theme-light .dashboard-sidebar { background:rgba(255,255,255,.94); border-color:#c5d9ea; } body.theme-light .sidebar-brand { color:#173451; } body.theme-light .sidebar-link { color:#47637d; } body.theme-light .sidebar-link:hover,body.theme-light .sidebar-link.active { background:#dbeef9; color:#173451; } body.theme-light .card,body.theme-light .section-card { background:linear-gradient(145deg,#fff,#edf5fc); border-color:#c6d9e9; box-shadow:0 10px 25px rgba(38,75,109,.1); } body.theme-light .section-title,body.theme-light .report-title,body.theme-light .form-label { color:#173451; } body.theme-light .time-badge { color:#157563; }

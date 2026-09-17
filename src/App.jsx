@@ -1,9 +1,12 @@
-import React, { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import Formulaire from './components/Form'
 import { Container } from 'react-bootstrap'
 import Titre from './components/Titre'
 import Liste from './components/Liste'
+import Menu from './components/Menu'
 import './App.css'
+
+const REPORTS_STORAGE_KEY = 'ctm-exported-reports'
 
 function App() {
 
@@ -15,6 +18,37 @@ function App() {
   const [isFinish, setIsfinish] = useState(false)
    const [isEdit, setIsEdit] = useState(false)
    const [idModif, setIdModfi] = useState(null)
+  const [theme, setTheme] = useState('dark')
+  const [savedReports, setSavedReports] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem(REPORTS_STORAGE_KEY)) || []
+    } catch {
+      return []
+    }
+  })
+
+  useEffect(() => {
+    document.body.classList.toggle('theme-light', theme === 'light')
+  }, [theme])
+
+  useEffect(() => {
+    localStorage.setItem(REPORTS_STORAGE_KEY, JSON.stringify(savedReports))
+  }, [savedReports])
+
+  const handleReportExport = (report) => {
+    setSavedReports(previousReports => [report, ...previousReports])
+  }
+
+  const handleNewReport = () => {
+    setStockdetecteur('')
+    setStocksite('')
+    setRapportLe('')
+    setAllstock([])
+    setTitreExport('Rapport')
+    setIsfinish(false)
+    setIsEdit(false)
+    setIdModfi(null)
+  }
 
   const nom_detecteur = [
     {
@@ -122,8 +156,10 @@ function App() {
   }, [allStock])
 
   return (
-    <div className=' p-1'>
-      <Container fluid  className='bordure rounded-5 mt-2 py-2 text-white'>
+    <main className='dashboard-layout'>
+      <Menu theme={theme} setTheme={setTheme} onNewReport={handleNewReport} reports={savedReports} />
+      <section className='app-shell p-2 p-md-4'>
+      <Container fluid className='app-panel rounded-4 p-2 p-md-3'>
 
         <Titre
           rapportLe={rapportLe}
@@ -159,16 +195,17 @@ function App() {
           setRapportLe={setRapportLe}
           setIsfinish={setIsfinish}
           rapportLe={rapportLe}
-          isEdit={isEdit}
           setIsEdit={setIsEdit}
             stock_sites={stock_sites}
             stock_detecteur={stock_detecteur}
             setIdModfi={setIdModfi}
+            onReportExport={handleReportExport}
            
         />
 
       </Container>
-    </div>
+      </section>
+    </main>
   )
 }
 

@@ -1,4 +1,3 @@
-import React, { useState } from 'react'
 import { Row, Col, Button } from 'react-bootstrap'
 import Swal from 'sweetalert2'
 import ExcelJS from "exceljs";
@@ -14,9 +13,10 @@ function Liste({
   setAllstock,
   setRapportLe,
   setIsfinish,
-  isEdit,
   setIsEdit,
-  setIdModfi
+  setIdModfi,
+  rapportLe,
+  onReportExport
 
 }) {
 
@@ -24,9 +24,9 @@ function Liste({
 
 
   //export en excel onclick
-  const handleExortExcel = () => {
+  const handleExortExcel = async () => {
 
-    Swal.fire({
+    const result = await Swal.fire({
       title: "Vous etes sur?",
       text: "Ces données seront exportés en Excel",
       icon: "warning",
@@ -35,13 +35,29 @@ function Liste({
       cancelButtonColor: "#d33",
       cancelButtonText: "Non",
       confirmButtonText: "Oui"
-    }).then((result) => {
-      if (result.isConfirmed) {
+    })
+    if (result.isConfirmed) {
+        const exportedRows = await exportExcel()
+        if (!exportedRows) return
 
-        exportExcel()
+        onReportExport({
+          id: `${rapportLe || 'sans-date'}-${allStock.map(row => `${row.acct}-${row.detct}`).join('_')}`,
+          title: titre_export || 'Rapport',
+          reportDate: rapportLe || allStock[0]?.date || '',
+          exportedAt: new Date().toISOString(),
+          rows: allStock.map((row, index) => ({
+            site: row.nom || 'Site non renseigné',
+            acct: row.acct || '',
+            callNo: row.numeros ? String(row.numeros) : '',
+            detector: row.detct || '',
+            alarmInfo: responsables[index] || '',
+            alarmTime: row.date ? row.date.replace('T', ' ') : ''
+          })),
+          count: exportedRows.length
+        })
 
         Swal.fire({
-          title: "Exportaion reussi!",
+          title: "Exportation réussie !",
           icon: "success",
           draggable: true
         });
@@ -49,14 +65,8 @@ function Liste({
         setStockdetecteur("")
         setTitreExport("Rapport")
         setAllstock([])
-        // setRapportLe("")
         setIsfinish(false)
-      }
-    });
-
-
-
-
+    }
   }
 
   // Exportation en Excel function
@@ -69,7 +79,7 @@ function Liste({
         text: "Aucune donnée à exporter",
       });
 
-      return;
+      return null;
     }
 
     // Préparer les données à exporter
@@ -264,6 +274,7 @@ function Liste({
       }),
       `${nomFichier}.xlsx`
     );
+    return donneesExcel;
   };
 
   const handleSuppr = (id) => {
@@ -307,16 +318,18 @@ function Liste({
 
 
   return (
-    <Row className="   p-2 ">
-      <Col className="rounded-3" style={{borderTop : "1px solid #164B7A"}}>
+    <Row className="mt-1">
+      <Col>
+        <section id='liste-rapports' className="section-card">
 
-        <div className='py-1' style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <h6 className='  '><i className="bi bi-bank"></i> {titre_export.replace(/T\d{2}([:_])\d{2}.*$/, "")}</h6>
-          <Button className=' btnsuccess' size='sm' disabled={allStock.length == 0}  style={{ cursor: "pointer" }} onClick={handleExortExcel}>Ecxel <i className="bi bi-file-earmark-spreadsheet"></i></Button></div>
+        <div className='d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3 mb-3'>
+          <div><h2 className='section-title mb-1'><i className="bi bi-bank me-2 text-info"></i>{titre_export.replace(/T\d{2}([:_])\d{2}.*$/, "")}</h2><p className='section-subtitle mb-0'>{allStock.length} alarme{allStock.length !== 1 ? 's' : ''} enregistrée{allStock.length !== 1 ? 's' : ''}</p></div>
+          <Button className='btnsuccess align-self-start align-self-sm-auto' size='sm' disabled={allStock.length === 0} onClick={handleExortExcel}>Exporter Excel <i className="bi bi-file-earmark-spreadsheet ms-1"></i></Button>
+        </div>
 
-        <div  style={{ maxHeight: "170px ", overflowY: "scroll", scrollbarWidth: "thin" }}>
+        <div className='report-table-wrap'>
           <div className=' table-responsive'>
-            <table className="table table-light p-2 table-bordered table-hover table-striped table-sm text-center">
+            <table className="table table-light table-bordered table-hover table-striped table-sm text-center report-table">
               <thead>
                 <tr>
                   <th scope='col'>Acct</th>
@@ -332,7 +345,7 @@ function Liste({
               </thead>
 
               <tbody>
-                {allStock.length === 0 ? (<tr><td className='text-center text-danger' colSpan={7}>Aucun element</td></tr>) : allStock.map((e, b) => (
+                {allStock.length === 0 ? (<tr><td className='empty-state' colSpan={7}><i className='bi bi-inbox fs-4 d-block mb-2'></i>Aucune alarme ajoutée pour le moment.</td></tr>) : allStock.map((e, b) => (
                   <tr key={b}>
 
                     <th scope='row'>{e.acct}</th>
@@ -352,10 +365,10 @@ function Liste({
                     </td>
 
                     <td></td>
-                    <td className='d-flex gap-2'>
-                      <Button size='sm' className='btndanger' onClick={() => handleSuppr(b)}><i className="bi bi-trash"></i></Button>
-                      <Button size='sm' className='btnmodifier' onClick={() => handleEdit(b)}><i className="bi bi-pencil-square"></i></Button>
-                    </td>
+                    <td><div className='table-actions'>
+                      <Button size='sm' className='btndanger' aria-label='Supprimer cette alarme' title='Supprimer' onClick={() => handleSuppr(b)}><i className="bi bi-trash"></i></Button>
+                      <Button size='sm' className='btnmodifier' aria-label='Modifier cette alarme' title='Modifier' onClick={() => handleEdit(b)}><i className="bi bi-pencil-square"></i></Button>
+                    </div></td>
 
                   </tr>
                 ))}
@@ -364,6 +377,7 @@ function Liste({
           </div>
         </div>
 
+        </section>
       </Col>
     </Row>
   )
