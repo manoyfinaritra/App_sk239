@@ -48,6 +48,10 @@ function Formulaire({
       alert("Veuillez sélectionner un détecteur")
       return
     }
+    if (!rapportLe) {
+      alert("Veuillez sélectionner la date et l'heure du rapport")
+      return
+    }
 
     const nouvelleValeur = {
       ...result,

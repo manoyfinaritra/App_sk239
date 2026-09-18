@@ -39,6 +39,17 @@ function App() {
     setSavedReports(previousReports => [report, ...previousReports])
   }
 
+  const handleDeleteReportEvents = (eventsToDelete) => {
+    const eventKeys = new Set(eventsToDelete.map(event => `${event.reportId}-${event.rowIndex}`))
+    setSavedReports(previousReports => previousReports
+      .map(report => {
+        const rows = report.rows.filter((_, rowIndex) => !eventKeys.has(`${report.id}-${rowIndex}`))
+        return { ...report, rows, count: rows.length }
+      })
+      .filter(report => report.rows.length > 0)
+    )
+  }
+
   const handleNewReport = () => {
     setStockdetecteur('')
     setStocksite('')
@@ -157,7 +168,7 @@ function App() {
 
   return (
     <main className='dashboard-layout'>
-      <Menu theme={theme} setTheme={setTheme} onNewReport={handleNewReport} reports={savedReports} />
+      <Menu theme={theme} setTheme={setTheme} onNewReport={handleNewReport} reports={savedReports} onDeleteReportEvents={handleDeleteReportEvents} />
       <section className='app-shell p-2 p-md-4'>
       <Container fluid className='app-panel rounded-4 p-2 p-md-3'>
 

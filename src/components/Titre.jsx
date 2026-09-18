@@ -15,6 +15,7 @@ function Titre({ rapportLe, setRapportLe }) {
             onChange={e => setRapportLe(e.target.value)}
             type="datetime-local"
             name="rapportLe"
+            required
           />
           </div><div className='time-badge rounded-pill px-3 py-2 text-nowrap small'><i className="bi bi-calendar3 me-2"></i>{date || 'Date non définie'}{heures && ` · ${heures}`}</div>
         </div></section>
