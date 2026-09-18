@@ -81,6 +81,17 @@ function Menu({ theme, setTheme, onNewReport, reports, onDeleteReportEvents }) {
       events.forEach(event => styleEventRow(worksheet.addRow({ ...event, handleRemark: '' })))
     })
 
+    // Zone réservée aux signatures, imprimée sous le tableau.
+    worksheet.addRow([]).height = 22
+    worksheet.addRow([]).height = 22
+    const signatureRow = worksheet.addRow(['CTM', '', 'Admin Tech', '', 'Adj Resp Tech', 'Direction'])
+    signatureRow.height = 30
+    signatureRow.eachCell(cell => {
+      cell.font = { bold: true, color: { argb: 'FF1F4E78' }, size: 11 }
+      cell.alignment = { horizontal: 'center', vertical: 'middle' }
+      cell.border = { top: { style: 'thin', color: { argb: 'FF1F4E78' } } }
+    })
+
     worksheet.views = [{ state: 'frozen', ySplit: 2 }]
     worksheet.printArea = `A1:F${worksheet.rowCount}`
     const buffer = await workbook.xlsx.writeBuffer()
