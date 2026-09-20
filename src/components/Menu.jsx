@@ -121,6 +121,8 @@ function Menu({ theme, setTheme, onNewReport, reports, onDeleteReportEvents, use
         <nav className='sidebar-nav' aria-label='Navigation principale'>
           <button className='sidebar-link active' onClick={onNewReport}><i className='bi bi-file-earmark-plus'></i><span>Nouveau rapport</span></button>
           <button className='sidebar-link' onClick={() => setShowReports(true)}><i className='bi bi-card-list'></i><span>Liste des rapports</span><b>{reports.length}</b></button>
+          <button title='Gerer les sites (ajouter, modifier, supprimer)' className='sidebar-link' onClick={() => {}}><i className='bi bi-person'></i><span>Administration</span></button>
+
         </nav>
         <div className='sidebar-bottom'>
           <p className='sidebar-label'>PARAMETRES</p>
