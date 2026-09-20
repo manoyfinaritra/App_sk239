@@ -56,7 +56,8 @@ function Formulaire({
     const nouvelleValeur = {
       ...result,
       detct: stock_detecteur,
-      date: rapportLe
+      date: rapportLe,
+      negativeAlarm : (stock_detecteur == 1 || stock_detecteur == 2 || stock_detecteur == 3 || stock_detecteur == 4 || stock_detecteur == 5 || stock_detecteur == 6 || stock_detecteur == 7 || stock_detecteur == 8) ? "Negative Alarm" : ""
     }
 
     // Ajouter la nouvelle soumission à l'historique

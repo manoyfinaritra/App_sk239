@@ -2,6 +2,8 @@ import { Row, Col, Button } from 'react-bootstrap'
 import Swal from 'sweetalert2'
 import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
+import { useEffect } from 'react';
+
 
 function Liste({
   allStock,
@@ -16,9 +18,12 @@ function Liste({
   setIsEdit,
   setIdModfi,
   rapportLe,
-  onReportExport
+  onReportExport,
+  setSaveToDatabase,
+  saveToDatabase
 
 }) {
+
 
 
 
@@ -51,7 +56,8 @@ function Liste({
             callNo: row.numeros ? String(row.numeros) : '',
             detector: row.detct || '',
             alarmInfo: responsables[index] || '',
-            alarmTime: row.date ? row.date.replace('T', ' ') : ''
+            alarmTime: row.date ? row.date.replace('T', ' ') : '',
+            negativeAlarm : row.negativeAlarm || ""
           })),
           count: exportedRows.length
         })
@@ -71,6 +77,8 @@ function Liste({
 
   // Exportation en Excel function
   const exportExcel = async () => {
+    handleSaveInDataBase(allStock)
+    
     // Vérifier s'il existe des données
     if (!allStock || allStock.length < 1) {
       Swal.fire({
@@ -87,9 +95,9 @@ function Liste({
       Acct: e.acct || "",
       CallNO: e.numeros ? String(e.numeros) : "",
       Detector: e.detct || "",
-      AlarmInfo: responsables[i] || "",
+      AlarmInfo: responsables[i] + " (SMS)" || "",
       AlarmTime: e.date ? e.date.replace("T", " ") : "",
-      HandleRemark: "",
+      HandleRemark: e.negativeAlarm,
     }));
 
     // Créer le classeur Excel
@@ -314,6 +322,22 @@ function Liste({
     })
 
   }
+const handleSaveInDataBase = (data) => {
+  data.map((e,i)=> {
+    setSaveToDatabase({...saveToDatabase,
+      action : "savedata",
+       Acct : e.acct,
+       CallNO : e.numeros,
+       Detector : e.detct,
+       AlarmInfo : responsables[i],
+       AlarmTime : e.date,
+       HandleRemark : e.negativeAlarm
+      })
+  })
+
+}
+
+
 
 
 
@@ -364,7 +388,7 @@ function Liste({
                       {e.date.replace("T", "  ")}
                     </td>
 
-                    <td></td>
+                    <td>{e.negativeAlarm}</td>
                     <td><div className='table-actions'>
                       <Button size='sm' className='btndanger' aria-label='Supprimer cette alarme' title='Supprimer' onClick={() => handleSuppr(b)}><i className="bi bi-trash"></i></Button>
                       <Button size='sm' className='btnmodifier' aria-label='Modifier cette alarme' title='Modifier' onClick={() => handleEdit(b)}><i className="bi bi-pencil-square"></i></Button>

@@ -1,0 +1,722 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap");
+
+
+/* =========================================
+   RESET
+========================================= */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+
+/* =========================================
+   BODY
+========================================= */
+
+html,
+body,
+#root {
+  min-height: 100%;
+ 
+}
+
+
+body {
+  font-family: "Poppins", sans-serif;
+}
+
+
+/* =========================================
+   PAGE
+========================================= */
+
+.page {
+  min-height: 100vh;
+
+  position: relative;
+
+  overflow: hidden;
+
+  padding: 45px 20px;
+
+  background:
+    radial-gradient(
+      circle at 20% 20%,
+      rgba(255, 255, 255, 0.9),
+      transparent 25%
+    ),
+    linear-gradient(
+      135deg,
+      #edf2fb,
+      #dfe7f4
+    );
+}
+
+
+/* =========================================
+   CERCLES DECORATIFS
+========================================= */
+
+.circle {
+  position: absolute;
+
+  border-radius: 50%;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.9),
+      rgba(215, 224, 239, 0.55)
+    );
+
+  box-shadow:
+    8px 8px 20px
+      rgba(100, 120, 150, 0.12),
+
+    -8px -8px 20px
+      rgba(255, 255, 255, 0.8);
+
+  pointer-events: none;
+}
+
+
+/* Cercle en haut à gauche */
+
+.circle-1 {
+  width: 150px;
+  height: 150px;
+
+  left: -70px;
+  top: -45px;
+}
+
+
+/* Cercle en haut à droite */
+
+.circle-2 {
+  width: 100px;
+  height: 100px;
+
+  right: -45px;
+  top: 80px;
+}
+
+
+/* Cercle en bas à gauche */
+
+.circle-3 {
+  width: 130px;
+  height: 130px;
+
+  left: -65px;
+  bottom: -55px;
+}
+
+
+/* Cercle en bas à droite */
+
+.circle-4 {
+  width: 150px;
+  height: 150px;
+
+  right: -70px;
+  bottom: -60px;
+}
+
+
+/* =========================================
+   HEADER
+========================================= */
+
+.header {
+  position: relative;
+
+  z-index: 2;
+
+  text-align: center;
+
+  margin-bottom: 28px;
+}
+
+
+.header h1 {
+  color: #18253d;
+
+  font-size: 52px;
+
+  font-weight: 700;
+
+  letter-spacing: -2px;
+}
+
+
+/* HTML CSS JAVASCRIPT */
+
+.technologies {
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
+
+  gap: 15px;
+
+  margin-top: 5px;
+
+  color: #65738a;
+
+  font-size: 17px;
+
+  font-weight: 500;
+}
+
+
+/* =========================================
+   CONTENT
+========================================= */
+
+.content {
+  margin-top: 100px;
+  position: relative;
+
+  z-index: 2;
+
+  width: 100%;
+
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
+}
+
+
+/* =========================================
+   LOGIN CARD
+========================================= */
+
+.login-card {
+  width: 315px;
+
+  padding: 30px 27px;
+
+  background: rgba(
+    245,
+    248,
+    253,
+    0.92
+  );
+
+  border-radius: 22px;
+
+  text-align: center;
+
+  box-shadow:
+    10px 10px 25px
+      rgba(86, 105, 130, 0.17),
+
+    -10px -10px 25px
+      rgba(255, 255, 255, 0.95);
+}
+
+
+/* =========================================
+   USER ICON
+========================================= */
+
+.user-icon {
+  width: 68px;
+  height: 68px;
+
+  margin: 0 auto 12px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  color: #78879d;
+
+  background: #edf2fa;
+
+  border-radius: 50%;
+
+  box-shadow:
+    inset 4px 4px 9px
+      rgba(140, 155, 175, 0.14),
+
+    inset -4px -4px 9px
+      rgba(255, 255, 255, 0.95);
+}
+
+
+/* =========================================
+   LOGIN TITLE
+========================================= */
+
+.login-card h2 {
+  color: #1b2942;
+
+  font-size: 28px;
+
+  font-weight: 600;
+}
+
+
+.welcome {
+  color: #788497;
+
+  font-size: 13px;
+
+  margin-top: 2px;
+
+  margin-bottom: 19px;
+}
+
+
+/* =========================================
+   INPUT BOX
+========================================= */
+
+.input-box {
+  height: 43px;
+
+  display: flex;
+
+  align-items: center;
+
+  margin-bottom: 12px;
+
+  padding: 0 13px;
+
+  background: #edf2fa;
+
+  border-radius: 12px;
+
+  color: #7c899d;
+
+  box-shadow:
+    inset 2px 2px 5px
+      rgba(100, 120, 145, 0.10),
+
+    inset -2px -2px 5px
+      rgba(255, 255, 255, 0.95),
+
+    2px 2px 7px
+      rgba(90, 110, 140, 0.08);
+}
+
+
+.input-box svg {
+  flex-shrink: 0;
+}
+
+
+/* =========================================
+   INPUT
+========================================= */
+
+.input-box input {
+  width: 100%;
+
+  height: 100%;
+
+  padding-left: 12px;
+
+  border: none;
+
+  outline: none;
+
+  background: transparent;
+
+  color: #263650;
+
+  font-size: 13px;
+}
+
+
+.input-box input::placeholder {
+  color: #8793a5;
+}
+
+
+/* =========================================
+   PASSWORD BUTTON
+========================================= */
+
+.eye-button {
+  border: none;
+
+  background: transparent;
+
+  color: #8290a5;
+
+  cursor: pointer;
+
+  padding: 4px;
+
+  font-size: 12px;
+}
+
+
+/* =========================================
+   OPTIONS
+========================================= */
+
+.options {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  margin: 3px 2px 18px;
+
+  font-size: 10px;
+}
+
+
+/* Remember me */
+
+.remember {
+  display: flex;
+
+  align-items: center;
+
+  gap: 5px;
+
+  color: #566477;
+
+  cursor: pointer;
+}
+
+
+.remember input {
+  width: 14px;
+  height: 14px;
+
+  accent-color: #577ab7;
+
+  cursor: pointer;
+}
+
+
+/* Forgot password */
+
+.forgot {
+  border: none;
+
+  background: transparent;
+
+  color: #5477b5;
+
+  cursor: pointer;
+
+  font-size: 10px;
+}
+
+
+.forgot:hover {
+  text-decoration: underline;
+}
+
+
+/* =========================================
+   SIGN IN BUTTON
+========================================= */
+
+.login-button {
+  width: 100%;
+
+  height: 43px;
+
+  border: none;
+
+  border-radius: 12px;
+
+  background: #edf2fa;
+
+  color: #26364f;
+
+  font-size: 14px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  box-shadow:
+    4px 4px 9px
+      rgba(100, 120, 145, 0.16),
+
+    -4px -4px 9px
+      rgba(255, 255, 255, 0.95);
+
+  transition: 0.2s;
+}
+
+
+.login-button:hover {
+  transform: translateY(-1px);
+}
+
+
+.login-button:active {
+  transform: translateY(1px);
+
+  box-shadow:
+    inset 3px 3px 7px
+      rgba(100, 120, 145, 0.15),
+
+    inset -3px -3px 7px
+      rgba(255, 255, 255, 0.9);
+}
+
+
+/* =========================================
+   SEPARATOR
+========================================= */
+
+.separator {
+  display: flex;
+
+  align-items: center;
+
+  gap: 9px;
+
+  margin: 19px 0 13px;
+
+  color: #8995a7;
+
+  font-size: 11px;
+}
+
+
+.separator span {
+  flex: 1;
+
+  height: 1px;
+
+  background: #cbd4e1;
+}
+
+
+.separator p {
+  white-space: nowrap;
+}
+
+
+/* =========================================
+   SOCIAL BUTTONS
+========================================= */
+
+.socials {
+  display: flex;
+
+  justify-content: center;
+
+  gap: 20px;
+}
+
+
+.social {
+  width: 49px;
+  height: 49px;
+
+  border: none;
+
+  border-radius: 50%;
+
+  background: #edf2fa;
+
+  cursor: pointer;
+
+  box-shadow:
+    5px 5px 10px
+      rgba(100, 120, 145, 0.16),
+
+    -5px -5px 10px
+      rgba(255, 255, 255, 0.95);
+
+  transition: 0.2s;
+}
+
+
+.social:hover {
+  transform: translateY(-2px);
+}
+
+
+.social:active {
+  transform: translateY(1px);
+}
+
+
+/* =========================================
+   GOOGLE
+========================================= */
+
+.google span {
+  color: #4285f4;
+
+  font-size: 20px;
+
+  font-weight: 600;
+}
+
+
+/* =========================================
+   APPLE
+========================================= */
+
+.apple span {
+  color: #202b3e;
+
+  font-size: 20px;
+}
+
+
+/* =========================================
+   FACEBOOK
+========================================= */
+
+.facebook span {
+  color: #4267b2;
+
+  font-size: 25px;
+
+  font-weight: 700;
+}
+
+
+/* =========================================
+   FOOTER
+========================================= */
+
+footer {
+  position: relative;
+
+  z-index: 2;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 20px;
+
+  margin-top: 28px;
+
+  color: #1e2c44;
+
+  font-size: 15px;
+
+  font-weight: 500;
+}
+
+
+footer span {
+  width: 60px;
+
+  height: 1px;
+
+  background: #8995a7;
+}
+
+
+/* =========================================
+   RESPONSIVE TABLET
+========================================= */
+
+@media (max-width: 600px) {
+
+  .page {
+    padding: 30px 15px;
+  }
+
+
+  .header {
+    margin-bottom: 25px;
+  }
+
+
+  .header h1 {
+    font-size: 40px;
+
+    letter-spacing: -1px;
+  }
+
+
+  .technologies {
+    font-size: 14px;
+
+    gap: 10px;
+  }
+
+
+  .login-card {
+    width: min(315px, 100%);
+
+    padding: 28px 23px;
+  }
+
+}
+
+
+/* =========================================
+   RESPONSIVE MOBILE
+========================================= */
+
+@media (max-width: 400px) {
+
+  .page {
+    padding: 25px 12px;
+  }
+
+
+  .header h1 {
+    font-size: 32px;
+  }
+
+
+  .technologies {
+    font-size: 12px;
+
+    gap: 8px;
+  }
+
+
+  .login-card {
+    padding: 25px 20px;
+  }
+
+
+  .user-icon {
+    width: 62px;
+    height: 62px;
+  }
+
+
+  .login-card h2 {
+    font-size: 26px;
+  }
+
+
+  footer {
+    margin-top: 22px;
+
+    font-size: 13px;
+
+    gap: 12px;
+  }
+
+
+  footer span {
+    width: 40px;
+  }
+
+}

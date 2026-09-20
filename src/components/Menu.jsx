@@ -1,12 +1,19 @@
 import { Button, Modal } from 'react-bootstrap'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import ExcelJS from 'exceljs'
 import { saveAs } from 'file-saver'
 
-function Menu({ theme, setTheme, onNewReport, reports, onDeleteReportEvents }) {
+function Menu({ theme, setTheme, onNewReport, reports, onDeleteReportEvents, users, setIsconnect, handleLogout }) {
+
+  if (users === null) {
+    setIsconnect(false)
+  }
   const isLight = theme === 'light'
   const [showReports, setShowReports] = useState(false)
   const [selectedDate, setSelectedDate] = useState('')
+
+
+
   const reportEvents = useMemo(() => reports.filter(report => {
     const date = report.reportDate?.slice(0, 10) || ''
     return !selectedDate || date === selectedDate
@@ -19,6 +26,7 @@ function Menu({ theme, setTheme, onNewReport, reports, onDeleteReportEvents }) {
     alarmInfo: row.alarmInfo ?? row.AlarmInfo ?? '',
     alarmTime: row.alarmTime ?? row.AlarmTime ?? '',
     reportDate: report.reportDate,
+    negativeAlarm: row.negativeAlarm ?? row.negativeAlarm ?? '',
     id: `${report.id}-${rowIndex}`,
     reportId: report.id,
     rowIndex
@@ -105,20 +113,28 @@ function Menu({ theme, setTheme, onNewReport, reports, onDeleteReportEvents }) {
     const confirmed = window.confirm(`Supprimer les ${events.length} événement(s) de « ${site} » pour la date affichée ?`)
     if (confirmed) onDeleteReportEvents(events)
   }
-
   return (
     <>
       <aside className='dashboard-sidebar'>
-        <div className='sidebar-brand'><span className='brand-icon'><i className='bi bi-shield-check'></i></span><span>CTM <small>REPORTS</small></span></div>
+        <div className='sidebar-brand'><span className='brand-icon'><i className='bi bi-shield-check'></i></span><span>CTM <small>{users.email && users.email}</small></span></div>
         <p className='sidebar-label'>RAPPORTS</p>
         <nav className='sidebar-nav' aria-label='Navigation principale'>
           <button className='sidebar-link active' onClick={onNewReport}><i className='bi bi-file-earmark-plus'></i><span>Nouveau rapport</span></button>
           <button className='sidebar-link' onClick={() => setShowReports(true)}><i className='bi bi-card-list'></i><span>Liste des rapports</span><b>{reports.length}</b></button>
         </nav>
         <div className='sidebar-bottom'>
-          <p className='sidebar-label'>APPARENCE</p>
-          <button type='button' className='sidebar-link' onClick={() => setTheme(isLight ? 'dark' : 'light')}>
-            <i className={`bi bi-${isLight ? 'moon-stars' : 'sun'}`}></i><span>Mode {isLight ? 'sombre' : 'clair'}</span>
+          <p className='sidebar-label'>PARAMETRES</p>
+          <button type='button' className='sidebar-link' >
+            <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+              <div onClick={() => setTheme(isLight ? 'dark' : 'light')} className=' p-1'>
+                <i className={`bi bi-${isLight ? 'moon-stars' : 'sun'}`}></i> <span>Mode  {isLight ? 'sombre' : 'clair'}</span>
+              </div>
+
+              <div className=' bg-danger p-1 rounded fw-bold text-white' onClick={handleLogout}>
+                <i className='bi bi-power'></i> <span className=''>Deconnexion</span>
+              </div>
+
+            </div>
           </button>
         </div>
       </aside>
@@ -133,51 +149,53 @@ function Menu({ theme, setTheme, onNewReport, reports, onDeleteReportEvents }) {
             </div>
             {selectedDate && <Button variant='outline-secondary' size='sm' onClick={() => setSelectedDate('')}>Toutes les dates</Button>}
             <span className='history-result'>{reportEvents.length} événement{reportEvents.length !== 1 ? 's' : ''}</span>
-            {  <Button title={'Vous devez filtrer par date'} disabled={!selectedDate} className='history-export' size='sm' onClick={handleExportByDate}><i className='bi bi-file-earmark-spreadsheet me-1'></i>Exporter en Excel</Button>}
+            {<Button title={'Vous devez filtrer par date'} disabled={!selectedDate} className='history-export' size='sm' onClick={handleExportByDate}><i className='bi bi-file-earmark-spreadsheet me-1'></i>Exporter en Excel</Button>}
           </div>
-          {reportEvents.length === 0 ? 
-          <div className='history-empty'>
-            <i className='bi bi-folder2-open'></i>
-            <p>{reports.length ? 'Aucun événement ne correspond à cette date.' : 'Aucun rapport exporté pour le moment.'}</p></div> : (
-            <div className='site-report-list'>{Object.entries(eventsBySite).map(([site, events]) => <section className='site-report-card' key={site}>
-              <div className='site-report-title'>
-                <div>
-                  <i className='bi bi-bank me-2'></i>
-                  {site}
-                 
-                </div>
-                <span className=' d-flex align-items-center gap-2'>
-                  {events.length} événement{events.length !== 1 ? 's' : ''}
-                   <Button size='sm' variant='outline-danger' onClick={() => handleDeleteSite(events)} title={`Supprimer tous les événements du site "${site}"`}><span className='visually-hidden'>Supprimer</span>
-                    <i className='bi bi-trash'></i></Button>
-                </span>
-                
-              </div>
-              <div className='history-table-wrap'>
-                <table className='table table-hover align-middle history-table'><thead>
-                  <tr>
-                    <th>Acct</th>
-                    <th>Call No</th>
-                    <th>Détecteur</th>
-                    <th>Information d’alarme</th>
-                    <th>Date et heure</th>
+          {reportEvents.length === 0 ?
+            <div className='history-empty'>
+              <i className='bi bi-folder2-open'></i>
+              <p>{reports.length ? 'Aucun événement ne correspond à cette date.' : 'Aucun rapport exporté pour le moment.'}</p></div> : (
+              <div className='site-report-list'>{Object.entries(eventsBySite).map(([site, events]) => <section className='site-report-card' key={site}>
+                <div className='site-report-title'>
+                  <div>
+                    <i className='bi bi-bank me-2'></i>
+                    {site}
 
-                  </tr>
-                </thead>
-                  <tbody>
-                    {events.map(event =>
-                      <tr key={event.id}>
-                        <td>{event.acct}</td>
-                        <td>{event.callNo}</td>
-                        <td className='text-uppercase'>{event.detector}</td>
-                        <td>{event.alarmInfo}</td>
-                        <td>{event.alarmTime || event.reportDate?.replace('T', ' ')}</td>
-                      </tr>)}
-                  </tbody>
-                </table>
-              </div>
-            </section>)}</div>
-          )}
+                  </div>
+                  <span className=' d-flex align-items-center gap-2'>
+                    {events.length} événement{events.length !== 1 ? 's' : ''}
+                    <Button size='sm' variant='outline-danger' onClick={() => handleDeleteSite(events)} title={`Supprimer tous les événements du site "${site}"`}><span className='visually-hidden'>Supprimer</span>
+                      <i className='bi bi-trash'></i></Button>
+                  </span>
+
+                </div>
+                <div className='history-table-wrap'>
+                  <table className='table table-hover align-middle history-table'><thead>
+                    <tr>
+                      <th>Acct</th>
+                      <th>Call No</th>
+                      <th>Détecteur</th>
+                      <th>Information d’alarme</th>
+                      <th>Date et heure</th>
+                      <th>HandleRemark</th>
+
+                    </tr>
+                  </thead>
+                    <tbody>
+                      {events.map(event =>
+                        <tr key={event.id}>
+                          <td>{event.acct}</td>
+                          <td>{event.callNo}</td>
+                          <td className='text-uppercase'>{event.detector}</td>
+                          <td>{event.alarmInfo}</td>
+                          <td>{event.alarmTime || event.reportDate?.replace('T', ' ')}</td>
+                          <td>{event.negativeAlarm || ""}</td>
+                        </tr>)}
+                    </tbody>
+                  </table>
+                </div>
+              </section>)}</div>
+            )}
         </Modal.Body>
         <Modal.Footer><Button variant='secondary' onClick={() => setShowReports(false)}>Fermer X</Button></Modal.Footer>
       </Modal>

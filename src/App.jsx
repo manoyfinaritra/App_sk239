@@ -5,7 +5,11 @@ import Titre from './components/Titre'
 import Liste from './components/Liste'
 import Menu from './components/Menu'
 import './App.css'
-
+import axios from 'axios'
+import Login from '../Login'
+import Api from './components/Api'
+import Spinner from 'react-bootstrap/Spinner';
+import Swal from 'sweetalert2'
 const REPORTS_STORAGE_KEY = 'ctm-exported-reports'
 
 function App() {
@@ -16,9 +20,29 @@ function App() {
   const [allStock, setAllstock] = useState([])
   const [titre_export, setTitreExport] = useState("Rapport")
   const [isFinish, setIsfinish] = useState(false)
-   const [isEdit, setIsEdit] = useState(false)
-   const [idModif, setIdModfi] = useState(null)
+  const [isEdit, setIsEdit] = useState(false)
+  const [idModif, setIdModfi] = useState(null)
   const [theme, setTheme] = useState('dark')
+  const [isconnect, setIsconnect] = useState(false)
+  const [message, setMessage] = useState("")
+  const [email, setEmail] = useState("")
+  const [motdepasse, setMotdepasse] = useState("")
+  const [chargement, setChargement] = useState(true)
+  const [users, setUsers] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem("user")) || null
+    } catch {
+      return null
+    }
+  })
+  const [saveToDatabase, setSaveToDatabase] = useState({
+    Acct: "",
+    CallNO: "",
+    Detector: "",
+    AlarmInfo: "",
+    AlarmTime: "",
+    HandleRemark: ""
+  })
   const [savedReports, setSavedReports] = useState(() => {
     try {
       return JSON.parse(localStorage.getItem(REPORTS_STORAGE_KEY)) || []
@@ -72,7 +96,7 @@ function App() {
   ]
 
   const sites = [
-    { acct: 311, nom: "BRED BANQUE ANDRAHARO", numeros: "+261321174395", da: "", sa: "", ccl: "Mme ARISOA" },
+    { acct: 311, nom: "BRED BANQUE ANDRAHARO", numeros: "+261321174395", da: "Mme LINA", sa: "", ccl: "Mme ARISOA" },
     { acct: 318, nom: "BRED BANQUE  BYPASS", numeros: "+261321174243", da: "Mr LEO", sa: "Mr ROJO", ccl: "" },
     { acct: 329, nom: "BRED BANQUE  ANTSIRABE ", numeros: "+261320329862", da: "Mr CHRISTIAN", sa: "Mr DINA", ccl: "" },
     { acct: 314, nom: "GAB BRED BANQUE TANA WATERFRONT", numeros: "+261321174418", da: "", sa: "", ccl: "" },
@@ -84,10 +108,10 @@ function App() {
     { acct: 317, nom: "BRED BANQUE  ANOSIALA", numeros: "+261321174245", da: "Mme MBOLA", sa: "Mme VOAHANGY", ccl: "" },
     { acct: 333, nom: "BRED BANQUE  MANJAKANDRIANA", numeros: "+261321174249", da: "Mme FITIA", sa: "Mme FITIA", ccl: "Mme FITIA" },
     { acct: 306, nom: "GAB BRED BANQUE  ANTSAHAVOLA", numeros: "+261321174121", da: "", sa: "", ccl: "" },
-    { acct: 306, nom: "GAB BRED BANQUE   DZAMANDZAR", numeros: "+261321174443", da: "", sa: "", ccl: "" },
+    { acct: 312, nom: "GAB BRED BANQUE   DZAMANDZAR", numeros: "+261321174443", da: "", sa: "", ccl: "" },
     { acct: 309, nom: "GAB BRED BANQUE  MALAZA ", numeros: "+261321174431", da: "", sa: "", ccl: "" },
     { acct: 320, nom: "GAB BRED BANQUE SAINTE MARIE", numeros: "+261321174247", da: "", sa: "", ccl: "" },
-    { acct: 302, nom: "GAB BRED BANQUE AMBANJA", numeros: "+261321174169", da: "Mme JUDY", sa: "Mr ASSANY", ccl: "" }
+    { acct: 302, nom: "BRED BANQUE AMBANJA", numeros: "+261321174169", da: "Mme JUDY", sa: "Mr ASSANY", ccl: "" }
   ]
 
   // Calculer les responsables de chaque détecteur
@@ -166,55 +190,188 @@ function App() {
 
   }, [allStock])
 
+
+  //enregistrement dans base de données
+
+  useEffect(() => {
+    const sendData = async () => {
+      try {
+        const response = await Api.post("sk239/data.php", saveToDatabase)
+        // console.log(response.data);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    sendData()
+  }, [saveToDatabase])
+
+
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setChargement(true)
+    const data = {
+      action: "connexion",
+      email: email,
+      motdepasse: motdepasse
+    };
+
+    try {
+
+
+      const response = await Api.post("sk239/data.php", data);
+
+      setMessage(response.data.message);
+
+      if (response.data.success) {
+
+        // Récupérer l'utilisateur envoyé par PHP
+        const user = response.data.user;
+
+        // Enregistrer l'utilisateur dans localStorage
+        localStorage.setItem("user", JSON.stringify(user));
+
+        // Mettre à jour le state immédiatement
+        setUsers(user);
+
+        // Nettoyer les champs
+        setEmail("");
+        setMotdepasse("");
+      }else{
+         setMessage(response.data.message);
+      }
+
+    } catch (error) {
+      setMessage(
+        error.response?.data?.message ||
+        "Erreur de connexion au serveur"
+      );
+
+    } finally {
+      setChargement(false);
+    }
+  };
+
+
+  useEffect(() => {
+    setIsconnect(users !== null);
+    setChargement(false);
+  }, [users]);
+
+  const handleLogout = () => {
+    Swal.fire({
+      title: "Déconnexion?",
+      text: "Vous étes sur de vouloir deconnecter",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      cancelButtonText: "Non",
+      confirmButtonText: "Oui"
+    }).then((result) => {
+      if (result.isConfirmed) {
+
+        localStorage.removeItem("user");
+        setUsers(null);
+        setIsconnect(false);
+        setMessage("")
+      }
+    })
+
+
+
+
+
+
+
+
+  };
+
+
+  if (chargement) {
+    return (<div style={{ height: "100vh", display: "flex", justifyContent: "center", alignItems: "center" }}>
+      <Spinner animation="border" variant="danger" />
+    </div>)
+  }
+
+
+  if (!isconnect) {
+    return (
+      <>
+        <Login
+          motdepasse={motdepasse}
+          setMotdepasse={setMotdepasse}
+          email={email}
+          setEmail={setEmail}
+          handleSubmit={handleSubmit}
+          message={message}
+        />
+      </>
+    )
+  }
+
+
+
   return (
     <main className='dashboard-layout'>
-      <Menu theme={theme} setTheme={setTheme} onNewReport={handleNewReport} reports={savedReports} onDeleteReportEvents={handleDeleteReportEvents} />
+      <Menu theme={theme}
+        setTheme={setTheme}
+        onNewReport={handleNewReport}
+        reports={savedReports}
+        onDeleteReportEvents={handleDeleteReportEvents}
+        users={users}
+        setIsconnect={setIsconnect}
+        handleLogout={handleLogout}
+      />
       <section className='app-shell p-2 p-md-4'>
-      <Container fluid className='app-panel rounded-4 p-2 p-md-3'>
+        <Container fluid className='app-panel rounded-4 p-2 p-md-3'>
 
-        <Titre
-          rapportLe={rapportLe}
-          setRapportLe={setRapportLe}
-        />
+          <Titre
+            rapportLe={rapportLe}
+            setRapportLe={setRapportLe}
+          />
 
-        <Formulaire
-          sites={sites}
-          nom_detecteur={nom_detecteur}
-          stock_detecteur={stock_detecteur}
-          setStockdetecteur={setStockdetecteur}
-          stock_sites={stock_sites}
-          setStocksite={setStocksite}
-          setAllstock={setAllstock}
-          rapportLe={rapportLe}
-          setTitreExport={setTitreExport}
-          isFinish={isFinish}
-          setIsfinish={setIsfinish}
-          isEdit = {isEdit}
-           setIsEdit={setIsEdit}
+          <Formulaire
+            sites={sites}
+            nom_detecteur={nom_detecteur}
+            stock_detecteur={stock_detecteur}
+            setStockdetecteur={setStockdetecteur}
+            stock_sites={stock_sites}
+            setStocksite={setStocksite}
+            setAllstock={setAllstock}
+            rapportLe={rapportLe}
+            setTitreExport={setTitreExport}
+            isFinish={isFinish}
+            setIsfinish={setIsfinish}
+            isEdit={isEdit}
+            setIsEdit={setIsEdit}
             allStock={allStock}
             idModif={idModif}
-        />
+          />
 
-        <Liste
-          allStock={allStock}
-          titre_export={titre_export}
-          responsables={responsables}
-          setStocksite={setStocksite}
-          setStockdetecteur={setStockdetecteur}
-          setTitreExport={setTitreExport}
-          setAllstock={setAllstock}
-          setRapportLe={setRapportLe}
-          setIsfinish={setIsfinish}
-          rapportLe={rapportLe}
-          setIsEdit={setIsEdit}
+          <Liste
+            allStock={allStock}
+            titre_export={titre_export}
+            responsables={responsables}
+            setStocksite={setStocksite}
+            setStockdetecteur={setStockdetecteur}
+            setTitreExport={setTitreExport}
+            setAllstock={setAllstock}
+            setRapportLe={setRapportLe}
+            setIsfinish={setIsfinish}
+            rapportLe={rapportLe}
+            setIsEdit={setIsEdit}
             stock_sites={stock_sites}
             stock_detecteur={stock_detecteur}
             setIdModfi={setIdModfi}
             onReportExport={handleReportExport}
-           
-        />
+            setSaveToDatabase={setSaveToDatabase}
+            saveToDatabase={saveToDatabase}
 
-      </Container>
+          />
+
+        </Container>
       </section>
     </main>
   )
