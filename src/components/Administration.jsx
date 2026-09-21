@@ -669,9 +669,9 @@ function Administration({ onSitesChanged }) {
                         <div className="row">
 
 
-                            <div className="col-md-3 mb-3">
+                            <div className="col-md-3  mb-3">
 
-                                <Form.Label>
+                                <Form.Label className="fw-bold text-secondary">
                                     ACCT
                                 </Form.Label>
 
@@ -688,7 +688,7 @@ function Administration({ onSitesChanged }) {
 
                             <div className="col-md-9 mb-3">
 
-                                <Form.Label>
+                                <Form.Label className="fw-bold text-secondary">
                                     Nom du site
                                 </Form.Label>
 
@@ -705,7 +705,7 @@ function Administration({ onSitesChanged }) {
 
                             <div className="col-md-12 mb-3">
 
-                                <Form.Label>
+                                <Form.Label className="fw-bold text-secondary">
                                     Numéro
                                 </Form.Label>
 
@@ -722,7 +722,7 @@ function Administration({ onSitesChanged }) {
 
                             <div className="col-md-4 mb-3">
 
-                                <Form.Label>
+                                <Form.Label className="fw-bold text-secondary">
                                     DA
                                 </Form.Label>
 
@@ -739,7 +739,7 @@ function Administration({ onSitesChanged }) {
 
                             <div className="col-md-4 mb-3">
 
-                                <Form.Label>
+                                <Form.Label className="fw-bold text-secondary">
                                     SA
                                 </Form.Label>
 
@@ -756,7 +756,7 @@ function Administration({ onSitesChanged }) {
 
                             <div className="col-md-4 mb-3">
 
-                                <Form.Label>
+                                <Form.Label className="fw-bold text-secondary">
                                     CCL
                                 </Form.Label>
 
