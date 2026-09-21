@@ -1,13 +1,9 @@
 import { Button, Modal } from 'react-bootstrap'
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import ExcelJS from 'exceljs'
 import { saveAs } from 'file-saver'
 
-function Menu({ theme, setTheme, onNewReport, reports, onDeleteReportEvents, users, setIsconnect, handleLogout }) {
-
-  if (users === null) {
-    setIsconnect(false)
-  }
+function Menu({ theme, setTheme, onNewReport, reports, onDeleteReportEvents, users, handleLogout, page, onShowAdministration }) {
   const isLight = theme === 'light'
   const [showReports, setShowReports] = useState(false)
   const [selectedDate, setSelectedDate] = useState('')
@@ -119,9 +115,9 @@ function Menu({ theme, setTheme, onNewReport, reports, onDeleteReportEvents, use
         <div className='sidebar-brand'><span className='brand-icon'><i className='bi bi-shield-check'></i></span><span>CTM <small>{users.email && users.email}</small></span></div>
         <p className='sidebar-label'>RAPPORTS</p>
         <nav className='sidebar-nav' aria-label='Navigation principale'>
-          <button className='sidebar-link active' onClick={onNewReport}><i className='bi bi-file-earmark-plus'></i><span>Nouveau rapport</span></button>
+          <button className={`sidebar-link ${page === 'report' ? 'active' : ''}`} onClick={onNewReport}><i className='bi bi-file-earmark-plus'></i><span>Nouveau rapport</span></button>
           <button className='sidebar-link' onClick={() => setShowReports(true)}><i className='bi bi-card-list'></i><span>Liste des rapports</span><b>{reports.length}</b></button>
-          <button title='Gerer les sites (ajouter, modifier, supprimer)' className='sidebar-link' onClick={() => {}}><i className='bi bi-person'></i><span>Administration</span></button>
+          <button title='Gérer les sites (ajouter, modifier, supprimer)' className={`sidebar-link ${page === 'administration' ? 'active' : ''}`} onClick={onShowAdministration}><i className='bi bi-gear'></i><span>Administration</span></button>
 
         </nav>
         <div className='sidebar-bottom'>

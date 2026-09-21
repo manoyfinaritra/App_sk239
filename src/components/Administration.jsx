@@ -3,7 +3,7 @@ import { Button, Form, Table, Modal } from "react-bootstrap";
 import Swal from "sweetalert2";
 import Api from "./Api";
 
-function Administration() {
+function Administration({ onSitesChanged }) {
 
     const [sites, setSites] = useState([]);
 
@@ -24,32 +24,14 @@ function Administration() {
     // RECUPERER LES SITES
     // ============================================================
 
-    const getSites = async () => {
-
-        try {
-
-            const response = await Api.post(
-                "sk239/data.php",
-                {
-                    action: "getSites"
-                }
-            );
-
-            if (response.data.success) {
-
-                setSites(response.data.sites);
-
-            }
-
-        } catch (error) {
-
-            console.error(
-                "Erreur récupération sites :",
-                error
-            );
-
-        }
-    };
+    const getSites = () => Api.get("sk239/data.php", { params: { action: "getSites" } })
+        .then((response) => {
+            if (response.data.success) setSites(response.data.sites);
+            else throw new Error(response.data.message || "Impossible de récupérer les sites.");
+        })
+        .catch((error) => {
+            console.error("Erreur récupération sites :", error);
+        });
 
 
     // ============================================================
@@ -58,7 +40,8 @@ function Administration() {
 
     useEffect(() => {
 
-        getSites();
+        const request = getSites();
+        return () => request?.catch(() => {});
 
     }, []);
 
@@ -128,6 +111,7 @@ function Administration() {
 
                 // Actualiser le tableau
                 getSites();
+                onSitesChanged?.();
 
             } else {
 
@@ -215,6 +199,7 @@ function Administration() {
                 setSiteEdit(null);
 
                 getSites();
+                onSitesChanged?.();
 
             } else {
 
@@ -289,6 +274,7 @@ function Administration() {
                 });
 
                 getSites();
+                onSitesChanged?.();
 
             } else {
 
@@ -317,7 +303,7 @@ function Administration() {
 
     return (
 
-        <div className="container-fluid p-4">
+        <div className="container-fluid administration-page p-4">
 
 
             {/* ==================================================
@@ -326,12 +312,12 @@ function Administration() {
 
             <div className="mb-4">
 
-                <h3>
+                <h3 className="text-light fw-bold">
                     <i className="bi bi-gear me-2"></i>
                     Administration des sites
                 </h3>
 
-                <p className="text-muted">
+                <p className=" text-sm text-secondary">
                     Ajouter, modifier ou supprimer les sites.
                 </p>
 
@@ -347,7 +333,7 @@ function Administration() {
 
                 <div className="card-header">
 
-                    <h5 className="mb-0">
+                    <h5 className="mb-0 text-light">
                         <i className="bi bi-plus-circle me-2"></i>
                         Ajouter un nouveau site
                     </h5>
@@ -511,7 +497,7 @@ function Administration() {
 
                 <div className="card-header">
 
-                    <h5 className="mb-0">
+                    <h5 className="mb-0 text-light">
 
                         <i className="bi bi-table me-2"></i>
 
@@ -534,14 +520,14 @@ function Administration() {
                             striped
                             bordered
                             hover
-                            className="mb-0"
+                            className="mb-0 admin-sites-table"
                         >
 
                             <thead>
 
                                 <tr>
 
-                                    <th>ID</th>
+                                  
                                     <th>ACCT</th>
                                     <th>Site</th>
                                     <th>Numéro</th>
@@ -563,9 +549,7 @@ function Administration() {
 
                                         <tr key={site.id}>
 
-                                            <td>
-                                                {site.id}
-                                            </td>
+                                            
 
                                             <td>
                                                 {site.acct}

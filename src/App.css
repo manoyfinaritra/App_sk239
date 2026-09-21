@@ -16,3 +16,77 @@ body.theme-light {
     background:linear-gradient(135deg,#f9fcff,#dcecf9) fixed;
      color:var(--text); } 
 body.theme-light .app-panel { background:rgba(255,255,255,.78); border-color:#b7d0e6; } body.theme-light .dashboard-sidebar { background:rgba(255,255,255,.94); border-color:#c5d9ea; } body.theme-light .sidebar-brand { color:#173451; } body.theme-light .sidebar-link { color:#47637d; } body.theme-light .sidebar-link:hover,body.theme-light .sidebar-link.active { background:#dbeef9; color:#173451; } body.theme-light .card,body.theme-light .section-card { background:linear-gradient(145deg,#fff,#edf5fc); border-color:#c6d9e9; box-shadow:0 10px 25px rgba(38,75,109,.1); } body.theme-light .section-title,body.theme-light .report-title,body.theme-light .form-label { color:#173451; } body.theme-light .time-badge { color:#157563; }
+
+/* Adaptation des écrans : ordinateur, tablette et smartphone */
+.app-shell { min-width:0; width:100%; }
+.app-panel { width:100%; min-height:calc(100vh - 2rem); }
+.administration-page { max-width:1180px; margin:0 auto; }
+.administration-page .card-header { background:rgba(6,25,48,.35); border-bottom-color:var(--border); }
+.admin-sites-table { min-width:850px; }
+.admin-sites-table th { white-space:nowrap; }
+.admin-sites-table td { vertical-align:middle; }
+.modal-dialog { margin:1rem auto; }
+
+@media (min-width:768px) and (max-width:1199.98px) {
+  .dashboard-sidebar { width:88px; padding:1rem .55rem; }
+  .sidebar-brand { justify-content:center; padding:.25rem 0 1.5rem; }
+  .sidebar-brand > span:last-child, .sidebar-label, .sidebar-link > span { display:none; }
+  .sidebar-link { justify-content:center; padding:.8rem .5rem; }
+  .sidebar-link b { position:absolute; margin:0 0 1.3rem 1.55rem; }
+  .app-shell { max-width:none; }
+  .app-panel { margin:0; }
+  .administration-page { padding:1.25rem!important; }
+}
+
+@media (max-width:767.98px) {
+  body { background-size:auto 100%; }
+  .dashboard-sidebar { position:sticky; top:0; z-index:1030; overflow-x:auto; -webkit-overflow-scrolling:touch; }
+  .sidebar-brand { flex:none; }
+  .sidebar-brand small { display:none; }
+  .sidebar-nav { min-width:max-content; }
+  .sidebar-link { min-width:2.65rem; min-height:2.65rem; }
+  .sidebar-bottom { flex:none; }
+  .sidebar-bottom .sidebar-link { padding:.35rem; }
+  .sidebar-bottom .sidebar-link > div { flex-direction:row!important; gap:.25rem!important; }
+  .sidebar-bottom .sidebar-link span { display:none; }
+  .app-shell { padding:.5rem!important; }
+  .app-panel { min-height:calc(100vh - 4.25rem); border-radius:.8rem!important; }
+  .section-card { border-radius:.8rem; }
+  .section-card > fieldset > .btn, .section-card > form > .btn { width:100%; min-height:2.65rem; }
+  .time-badge { width:100%; text-align:center; }
+  .report-table-wrap { max-height:none; }
+  .report-table { min-width:700px; }
+  .history-filters { align-items:stretch; padding:.8rem; }
+  .history-filters > * { margin-left:0!important; }
+  .history-filters > div { width:100%; }
+  .history-filters input, .history-filters .btn { width:100%; }
+  .history-result { padding:0; }
+  .site-report-title { align-items:flex-start; flex-direction:column; gap:.45rem; padding:.7rem .8rem; }
+  .site-report-title span { width:100%; justify-content:space-between; }
+  .administration-page { padding:.75rem!important; }
+  .administration-page > .mb-4 { margin-bottom:1rem!important; }
+  .administration-page h3 { font-size:1.2rem; }
+  .administration-page .card-body { padding:1rem; }
+  .administration-page .card-body.p-0 { padding:0; }
+  .administration-page .btn[type='submit'] { width:100%; min-height:2.7rem; }
+  .admin-sites-table { min-width:760px; font-size:.82rem; }
+  .admin-sites-table th, .admin-sites-table td { padding:.55rem .45rem; }
+  .modal-dialog { width:calc(100% - 1rem); margin:.5rem auto; }
+  .modal-content { border-radius:.8rem; }
+  .modal-footer { display:grid; grid-template-columns:1fr 1fr; gap:.5rem; }
+  .modal-footer .btn { width:100%; margin:0!important; }
+}
+
+@media (max-width:399.98px) {
+  .dashboard-sidebar { gap:.3rem; padding:.5rem; }
+  .sidebar-brand { padding:0; }
+  .brand-icon { width:2rem; height:2rem; font-size:1rem; }
+  .sidebar-link { min-width:2.3rem; min-height:2.3rem; padding:.4rem; }
+  .app-panel { padding:.45rem!important; }
+  .section-card { padding:.75rem; }
+  .section-title { font-size:.94rem; }
+  .section-subtitle, .selection-note { font-size:.76rem; }
+  .administration-page { padding:.4rem!important; }
+  .administration-page .card-body { padding:.75rem; }
+  .modal-header, .modal-body, .modal-footer { padding:.85rem; }
+}

@@ -4,8 +4,8 @@ import { Container } from 'react-bootstrap'
 import Titre from './components/Titre'
 import Liste from './components/Liste'
 import Menu from './components/Menu'
+import Administration from './components/Administration'
 import './App.css'
-import axios from 'axios'
 import Login from '../Login'
 import Api from './components/Api'
 import Spinner from 'react-bootstrap/Spinner';
@@ -23,25 +23,18 @@ function App() {
   const [isEdit, setIsEdit] = useState(false)
   const [idModif, setIdModfi] = useState(null)
   const [theme, setTheme] = useState('dark')
-  const [isconnect, setIsconnect] = useState(false)
   const [message, setMessage] = useState("")
   const [email, setEmail] = useState("")
   const [motdepasse, setMotdepasse] = useState("")
   const [chargement, setChargement] = useState(true)
+  const [sites, setSites] = useState([])
+  const [page, setPage] = useState('report')
   const [users, setUsers] = useState(() => {
     try {
       return JSON.parse(localStorage.getItem("user")) || null
     } catch {
       return null
     }
-  })
-  const [saveToDatabase, setSaveToDatabase] = useState({
-    Acct: "",
-    CallNO: "",
-    Detector: "",
-    AlarmInfo: "",
-    AlarmTime: "",
-    HandleRemark: ""
   })
   const [savedReports, setSavedReports] = useState(() => {
     try {
@@ -75,6 +68,7 @@ function App() {
   }
 
   const handleNewReport = () => {
+    setPage('report')
     setStockdetecteur('')
     setStocksite('')
     setRapportLe('')
@@ -95,7 +89,22 @@ function App() {
     }
   ]
 
-  const sites = [
+  // Les sites sont chargés depuis la base afin que toute modification faite
+  // dans Administration soit utilisable immédiatement dans le formulaire.
+  const fetchSites = () => Api.get('sk239/data.php', { params: { action: 'getSites' } })
+    .then((response) => {
+      if (response.data.success) setSites(response.data.sites)
+      else console.error(response.data.message || 'Impossible de récupérer les sites.')
+    })
+    .catch((error) => console.error('Erreur lors de la récupération des sites :', error))
+
+  useEffect(() => {
+    const request = fetchSites()
+    request.finally(() => setChargement(false))
+    return () => request?.catch(() => {})
+  }, [])
+
+ /* const sites = [
     { acct: 311, nom: "BRED BANQUE ANDRAHARO", numeros: "+261321174395", da: "Mme LINA", sa: "", ccl: "Mme ARISOA" },
     { acct: 318, nom: "BRED BANQUE  BYPASS", numeros: "+261321174243", da: "Mr LEO", sa: "Mr ROJO", ccl: "" },
     { acct: 329, nom: "BRED BANQUE  ANTSIRABE ", numeros: "+261320329862", da: "Mr CHRISTIAN", sa: "Mr DINA", ccl: "" },
@@ -112,7 +121,7 @@ function App() {
     { acct: 309, nom: "GAB BRED BANQUE  MALAZA ", numeros: "+261321174431", da: "", sa: "", ccl: "" },
     { acct: 320, nom: "GAB BRED BANQUE SAINTE MARIE", numeros: "+261321174247", da: "", sa: "", ccl: "" },
     { acct: 302, nom: "BRED BANQUE AMBANJA", numeros: "+261321174169", da: "Mme JUDY", sa: "Mr ASSANY", ccl: "" }
-  ]
+  ] */
 
   // Calculer les responsables de chaque détecteur
   const responsables = useMemo(() => {
@@ -191,23 +200,6 @@ function App() {
   }, [allStock])
 
 
-  //enregistrement dans base de données
-
-  useEffect(() => {
-    const sendData = async () => {
-      try {
-        const response = await Api.post("sk239/data.php", saveToDatabase)
-        // console.log(response.data);
-      } catch (error) {
-        console.log(error);
-      }
-    }
-
-    sendData()
-  }, [saveToDatabase])
-
-
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setChargement(true)
@@ -254,11 +246,6 @@ function App() {
   };
 
 
-  useEffect(() => {
-    setIsconnect(users !== null);
-    setChargement(false);
-  }, [users]);
-
   const handleLogout = () => {
     Swal.fire({
       title: "Déconnexion?",
@@ -274,7 +261,6 @@ function App() {
 
         localStorage.removeItem("user");
         setUsers(null);
-        setIsconnect(false);
         setMessage("")
       }
     })
@@ -296,7 +282,7 @@ function App() {
   }
 
 
-  if (!isconnect) {
+  if (users === null) {
     return (
       <>
         <Login
@@ -321,11 +307,16 @@ function App() {
         reports={savedReports}
         onDeleteReportEvents={handleDeleteReportEvents}
         users={users}
-        setIsconnect={setIsconnect}
         handleLogout={handleLogout}
+        page={page}
+        onShowAdministration={() => setPage('administration')}
       />
       <section className='app-shell p-2 p-md-4'>
         <Container fluid className='app-panel rounded-4 p-2 p-md-3'>
+
+          {page === 'administration' ? (
+            <Administration onSitesChanged={fetchSites} />
+          ) : <>
 
           <Titre
             rapportLe={rapportLe}
@@ -366,10 +357,8 @@ function App() {
             stock_detecteur={stock_detecteur}
             setIdModfi={setIdModfi}
             onReportExport={handleReportExport}
-            setSaveToDatabase={setSaveToDatabase}
-            saveToDatabase={saveToDatabase}
-
           />
+          </>}
 
         </Container>
       </section>

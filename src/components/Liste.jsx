@@ -2,7 +2,6 @@ import { Row, Col, Button } from 'react-bootstrap'
 import Swal from 'sweetalert2'
 import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
-import { useEffect } from 'react';
 
 
 function Liste({
@@ -18,9 +17,7 @@ function Liste({
   setIsEdit,
   setIdModfi,
   rapportLe,
-  onReportExport,
-  setSaveToDatabase,
-  saveToDatabase
+  onReportExport
 
 }) {
 
@@ -77,8 +74,6 @@ function Liste({
 
   // Exportation en Excel function
   const exportExcel = async () => {
-    handleSaveInDataBase(allStock)
-    
     // Vérifier s'il existe des données
     if (!allStock || allStock.length < 1) {
       Swal.fire({
@@ -322,24 +317,6 @@ function Liste({
     })
 
   }
-const handleSaveInDataBase = (data) => {
-  data.map((e,i)=> {
-    setSaveToDatabase({...saveToDatabase,
-      action : "savedata",
-       Acct : e.acct,
-       CallNO : e.numeros,
-       Detector : e.detct,
-       AlarmInfo : responsables[i],
-       AlarmTime : e.date,
-       HandleRemark : e.negativeAlarm
-      })
-  })
-
-}
-
-
-
-
 
   return (
     <Row className="mt-1">

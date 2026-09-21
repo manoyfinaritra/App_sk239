@@ -2,8 +2,8 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Hôte : 127.0.0.1
--- Généré le : dim. 20 sep. 2026 à 14:50
+-- Hôte : localhost
+-- Généré le : lun. 21 sep. 2026 à 09:13
 -- Version du serveur : 10.4.32-MariaDB
 -- Version de PHP : 8.2.12
 
@@ -59,6 +59,25 @@ INSERT INTO `site` (`id`, `acct`, `nom`, `numeros`, `da`, `sa`, `ccl`) VALUES
 (15, 320, 'GAB BRED BANQUE SAINTE MARIE', '+261321174247', '', '', ''),
 (16, 302, 'BRED BANQUE AMBANJA', '+261321174169', 'Mme JUDY', 'Mr ASSANY', '');
 
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `users`
+--
+
+CREATE TABLE `users` (
+  `id` int(11) NOT NULL,
+  `email` text NOT NULL,
+  `motdepasse` text NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Déchargement des données de la table `users`
+--
+
+INSERT INTO `users` (`id`, `email`, `motdepasse`) VALUES
+(1, 'manoyfinaritra@gmail.com', '$2y$10$khROo1AZLNBXr6o4lvt/oegfnN23xVnxZFpaBcOD4VO1dr/eOQjpW');
+
 --
 -- Index pour les tables déchargées
 --
@@ -70,6 +89,12 @@ ALTER TABLE `site`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Index pour la table `users`
+--
+ALTER TABLE `users`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- AUTO_INCREMENT pour les tables déchargées
 --
 
@@ -78,6 +103,12 @@ ALTER TABLE `site`
 --
 ALTER TABLE `site`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+
+--
+-- AUTO_INCREMENT pour la table `users`
+--
+ALTER TABLE `users`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

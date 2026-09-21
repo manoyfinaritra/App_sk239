@@ -1,6 +1,5 @@
 import { useState } from "react";
 import "./Login.css";
-import Api from "./src/components/Api";
 import { Alert } from "react-bootstrap";
 
 function Login(
