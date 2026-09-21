@@ -1,10 +1,19 @@
 import axios from "axios";
 
-const Api = axios.create({
-    // Le dossier `App_sk239` est placé dans le serveur PHP local (htdocs).
-    // baseURL : "https://ctmmds.infinityfree.me/"
-     baseURL : "http://localhost/App_sk239/"
+const hostname = window.location.hostname;
+const isLocal =
+    hostname === "localhost" ||
+    hostname === "127.0.0.1" ||
+    hostname === "::1" ||
+    hostname === "";
 
+const Api = axios.create({
+    // Détection auto local / InfinityFree
+    // Local (htdocs) : http://localhost/App_sk239/
+    // Prod : https://ctmmds.infinityfree.me/
+    baseURL: isLocal
+        ? "http://localhost/App_sk239/backend/"
+        : "/backend/", // InfinityFree
 })
 
 

@@ -21,8 +21,31 @@ $body = json_decode(file_get_contents('php://input'), true);
 $data = is_array($body) ? $body : [];
 $action = $data['action'] ?? $_GET['action'] ?? '';
 
+// ============================================================
+// CONFIG BASE DE DONNÉES : détection auto local / InfinityFree
+// ============================================================
+$httpHost = $_SERVER['HTTP_HOST'] ?? ($_SERVER['SERVER_NAME'] ?? '');
+$isLocal = stripos($httpHost, 'localhost') !== false
+    || stripos($httpHost, '127.0.0.1') !== false
+    || stripos($httpHost, '::1') !== false
+    || $httpHost === '';
+
+if ($isLocal) {
+    // XAMPP local
+    $dbHost = 'localhost';
+    $dbName = 'sk239';
+    $dbUser = 'root';
+    $dbPass = '';
+} else {
+    // InfinityFree (production)
+    $dbHost = 'sql106.infinityfree.com';
+    $dbName = 'if0_42970771_sk239';
+    $dbUser = 'if0_42970771';
+    $dbPass = 'RiVgXPVlnNQa';
+}
+
 try {
-    $db = new PDO('mysql:host=localhost;dbname=sk239;charset=utf8mb4', 'root', '', [
+    $db = new PDO("mysql:host={$dbHost};dbname={$dbName};charset=utf8mb4", $dbUser, $dbPass, [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
     ]);

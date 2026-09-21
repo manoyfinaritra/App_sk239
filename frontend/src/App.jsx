@@ -91,7 +91,7 @@ function App() {
 
   // Les sites sont chargés depuis la base afin que toute modification faite
   // dans Administration soit utilisable immédiatement dans le formulaire.
-  const fetchSites = () => Api.get('backend/data.php', { params: { action: 'getSites' } })
+  const fetchSites = () => Api.get('data.php', { params: { action: 'getSites' } })
     .then((response) => {
       if (response.data.success) setSites(response.data.sites)
       else console.error(response.data.message || 'Impossible de récupérer les sites.')
@@ -212,7 +212,7 @@ function App() {
     try {
 
 
-      const response = await Api.post("backend/data.php", data);
+      const response = await Api.post("data.php", data);
 
       setMessage(response.data.message);
 
