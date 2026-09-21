@@ -24,7 +24,7 @@ function Administration({ onSitesChanged }) {
     // RECUPERER LES SITES
     // ============================================================
 
-    const getSites = () => Api.get("sk239/data.php", { params: { action: "getSites" } })
+    const getSites = () => Api.get("backend/data.php", { params: { action: "getSites" } })
         .then((response) => {
             if (response.data.success) setSites(response.data.sites);
             else throw new Error(response.data.message || "Impossible de récupérer les sites.");
@@ -85,7 +85,7 @@ function Administration({ onSitesChanged }) {
         try {
 
             const response = await Api.post(
-                "sk239/data.php",
+                "backend/data.php",
                 {
                     action: "addSite",
 
@@ -169,7 +169,7 @@ function Administration({ onSitesChanged }) {
         try {
 
             const response = await Api.post(
-                "sk239/data.php",
+                "backend/data.php",
                 {
                     action: "updateSite",
 
@@ -257,7 +257,7 @@ function Administration({ onSitesChanged }) {
         try {
 
             const response = await Api.post(
-                "sk239/data.php",
+                "backend/data.php",
                 {
                     action: "deleteSite",
                     id: id
