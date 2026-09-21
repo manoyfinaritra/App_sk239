@@ -90,3 +90,110 @@ body.theme-light .app-panel { background:rgba(255,255,255,.78); border-color:#b7
   .administration-page .card-body { padding:.75rem; }
   .modal-header, .modal-body, .modal-footer { padding:.85rem; }
 }
+
+/* ==========================================================
+   THÈMES DYNAMIQUES clair / sombre + styles améliorés
+   ========================================================== */
+:root {
+  color-scheme: dark;
+  --sidebar-bg: rgba(5,19,37,.96);
+  --panel-bg: rgba(7,25,47,.8);
+  --card-glow: rgba(32,199,237,.35);
+  --link-active: linear-gradient(90deg,#16446d,#1b5a8a);
+  --thead-bg: #0b3156;
+  --thead-color: #dff8ff;
+  --row-hover: rgba(32,199,237,.12);
+  --modal-head-bg: linear-gradient(135deg,#0b2a4d,#16446d);
+  --shadow-lg: 0 22px 60px rgba(0,0,0,.35);
+  --theme-transition: background-color .35s ease, color .35s ease, border-color .35s ease, box-shadow .35s ease;
+}
+body.theme-light {
+  color-scheme: light;
+  --sidebar-bg: rgba(255,255,255,.9);
+  --panel-bg: rgba(255,255,255,.82);
+  --card-glow: rgba(23,124,174,.25);
+  --link-active: linear-gradient(90deg,#cde9f8,#a9d8f0);
+  --thead-bg: #0f3a63;
+  --thead-color: #eaf6ff;
+  --row-hover: rgba(23,124,174,.1);
+  --modal-head-bg: linear-gradient(135deg,#e8f4fc,#c8e4f5);
+  --shadow-lg: 0 22px 50px rgba(38,75,109,.16);
+}
+
+/* Transition douce lors du basculement clair / sombre */
+body, .app-panel, .dashboard-sidebar, .sidebar-link, .section-card, .card,
+.btn, .form-control, .form-select, .report-modal .modal-content,
+.site-report-card, .history-filters, .time-badge {
+  transition: var(--theme-transition);
+}
+
+/* Fond animé subtil */
+body { background-size: 220% 220%; animation: themeDrift 18s ease-in-out infinite alternate; }
+@keyframes themeDrift { from { background-position: 0% 0%; } to { background-position: 100% 100%; } }
+::selection { background: rgba(32,199,237,.35); }
+
+/* Barres de défilement thématisées */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: linear-gradient(180deg,#2d719b,#16446d); border-radius: 8px; border: 2px solid transparent; background-clip: content-box; }
+body.theme-light ::-webkit-scrollbar-thumb { background: linear-gradient(180deg,#9cc6e2,#5b93b8); border: 2px solid transparent; background-clip: content-box; }
+
+/* Barre latérale */
+.dashboard-sidebar { background: var(--sidebar-bg); backdrop-filter: blur(8px); }
+.app-panel { background: var(--panel-bg); backdrop-filter: blur(6px); }
+.sidebar-link { position: relative; overflow: hidden; }
+.sidebar-link::before { content: ""; position: absolute; left: 0; top: 20%; bottom: 20%; width: 3px; border-radius: 3px; background: var(--primary); transform: scaleY(0); transition: transform .25s ease; }
+.sidebar-link:hover { transform: translateX(3px); }
+.sidebar-link.active { background: var(--link-active); box-shadow: 0 4px 14px rgba(0,0,0,.25), inset 0 0 0 1px rgba(32,199,237,.25); }
+.sidebar-link.active::before { transform: scaleY(1); }
+.sidebar-link i { transition: transform .3s ease; }
+.sidebar-link:hover i { transform: scale(1.15) rotate(-6deg); }
+.sidebar-link b { background: linear-gradient(135deg,#2d719b,#20c7ed); box-shadow: 0 2px 8px rgba(32,199,237,.4); }
+.brand-icon { position: relative; overflow: hidden; animation: brandPulse 3s ease-in-out infinite; }
+@keyframes brandPulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(33,201,237,.45); } 50% { box-shadow: 0 0 0 9px rgba(33,201,237,0); } }
+
+/* Cartes */
+.section-card:focus-within { border-color: var(--primary); box-shadow: 0 0 0 .15rem rgba(32,199,237,.18), 0 10px 25px rgba(0,0,0,.12); }
+.site-report-card { transition: var(--theme-transition), transform .2s ease; }
+.site-report-card:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(11,49,86,.18); }
+
+/* Boutons en dégradés dynamiques */
+.btn { transition: var(--theme-transition), transform .16s ease, filter .16s ease; }
+.btn:hover:not(:disabled) { transform: translateY(-2px); }
+.btn:active:not(:disabled) { transform: translateY(0) scale(.98); }
+.btnprimary, .btnmodifier { background: linear-gradient(135deg,#25d0f5,#1295c6)!important; box-shadow: 0 6px 16px rgba(32,199,237,.35); }
+.btnsuccess, .history-export { background: linear-gradient(135deg,#24d3ae,#0f9d7e)!important; box-shadow: 0 6px 16px rgba(31,198,165,.35); }
+.btndanger { background: linear-gradient(135deg,#f2627c,#d6334f)!important; box-shadow: 0 6px 16px rgba(240,82,107,.35); }
+.btnprimary:hover:not(:disabled), .btnmodifier:hover:not(:disabled) { box-shadow: 0 10px 24px rgba(32,199,237,.5); }
+.btnsuccess:hover:not(:disabled), .history-export:hover:not(:disabled) { box-shadow: 0 10px 24px rgba(31,198,165,.5); }
+.btndanger:hover:not(:disabled) { box-shadow: 0 10px 24px rgba(240,82,107,.5); }
+
+/* Tableaux : en-têtes fixes + survol des lignes */
+.report-table-wrap thead th, .history-table-wrap thead th { position: sticky; top: 0; z-index: 2; }
+.report-table thead th, .history-table thead th { background: var(--thead-bg); color: var(--thead-color); }
+.report-table tbody tr, .history-table tbody tr { transition: background-color .2s ease; }
+.report-table tbody tr:hover, .history-table tbody tr:hover { background-color: var(--row-hover); }
+
+/* Modale des rapports */
+.report-modal .modal-content { animation: modalPop .3s ease; box-shadow: var(--shadow-lg); }
+@keyframes modalPop { from { opacity: 0; transform: translateY(16px) scale(.98); } to { opacity: 1; transform: none; } }
+.report-modal .modal-header { background: var(--modal-head-bg); }
+body.theme-light .report-modal .modal-header { color: #173451; }
+body.theme-light .report-modal .btn-close { filter: none; }
+body.theme-light .modal-subtitle { color: #4a6a86; }
+
+/* Filtres et champs : focus lumineux */
+.history-filters input:focus, .history-filters select:focus { border-color: var(--primary)!important; box-shadow: 0 0 0 .2rem rgba(32,199,237,.22)!important; outline: 0; }
+.history-empty i { animation: floatY 3s ease-in-out infinite; }
+@keyframes floatY { 50% { transform: translateY(-6px); } }
+
+/* Correctifs mode clair : textes bootstrap restés clairs */
+body.theme-light .administration-page h3.text-light,
+body.theme-light .administration-page .card-header .text-light { color: #173451!important; }
+body.theme-light .administration-page .card-header { background: rgba(23,124,174,.1); }
+body.theme-light .time-badge { background: #dff3ec; border-color: #9ed9c6; }
+body.theme-light .sidebar-bottom .bg-danger { box-shadow: 0 4px 12px rgba(220,53,69,.35); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none!important; transition: none!important; }
+}

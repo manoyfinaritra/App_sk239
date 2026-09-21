@@ -736,3 +736,52 @@ footer span {
   }
 
 }
+
+/* ==========================================================
+   DYNAMIQUE : animations + variante sombre (suit le thème)
+   ========================================================== */
+.login-card { animation: loginPop .45s ease both; }
+@keyframes loginPop { from { opacity: 0; transform: translateY(18px) scale(.97); } to { opacity: 1; transform: none; } }
+.header { animation: loginFade .5s ease both; }
+@keyframes loginFade { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: none; } }
+.circle-1 { animation: drift 9s ease-in-out infinite alternate; }
+.circle-2 { animation: drift 7s ease-in-out infinite alternate-reverse; }
+.circle-3 { animation: drift 11s ease-in-out infinite alternate; }
+.circle-4 { animation: drift 8s ease-in-out infinite alternate-reverse; }
+@keyframes drift { from { transform: translate(0, 0); } to { transform: translate(14px, 18px); } }
+
+.input-box { border: 1px solid transparent; transition: box-shadow .25s ease, border-color .25s ease; }
+.input-box:focus-within { border-color: #20c7ed; box-shadow: 0 0 0 3px rgba(32,199,237,.18), inset 2px 2px 5px rgba(100,120,145,.1), inset -2px -2px 5px rgba(255,255,255,.95); }
+
+.login-button { background: linear-gradient(135deg,#25d0f5,#1295c6); color: #fff; box-shadow: 0 8px 20px rgba(32,199,237,.35); transition: transform .2s ease, box-shadow .2s ease, filter .2s ease; }
+.login-button:hover { transform: translateY(-2px); filter: brightness(1.06); box-shadow: 0 12px 26px rgba(32,199,237,.45); }
+.login-button:active { transform: translateY(1px) scale(.99); box-shadow: inset 3px 3px 7px rgba(0,0,0,.2); }
+.social { transition: transform .2s ease, box-shadow .2s ease; }
+.social:hover { transform: translateY(-2px); box-shadow: 5px 5px 10px rgba(100,120,145,.16), -5px -5px 10px rgba(255,255,255,.95), 0 0 0 3px rgba(32,199,237,.25); }
+
+/* ----- Mode sombre : la page login suit le dashboard ----- */
+body:not(.theme-light) .page { background: radial-gradient(circle at 20% 20%, rgba(32,199,237,.18), transparent 30%), linear-gradient(135deg,#0a2240,#07192f); }
+body:not(.theme-light) .circle { background: linear-gradient(145deg, rgba(32,199,237,.25), rgba(23,55,93,.5)); box-shadow: 8px 8px 20px rgba(0,0,0,.35), -8px -8px 20px rgba(32,199,237,.08); }
+body:not(.theme-light) .header h1 { color: #f2f8fd; }
+body:not(.theme-light) .technologies { color: #8fa9c2; }
+body:not(.theme-light) .login-card { background: rgba(16,41,71,.92); border: 1px solid rgba(73,143,195,.35); box-shadow: 10px 10px 25px rgba(0,0,0,.4), -10px -10px 25px rgba(32,199,237,.06); }
+body:not(.theme-light) .login-card h2 { color: #f2f8fd; }
+body:not(.theme-light) .welcome { color: #8fa9c2; }
+body:not(.theme-light) .user-icon { background: #0d2c4f; color: #20c7ed; box-shadow: inset 4px 4px 9px rgba(0,0,0,.35), inset -4px -4px 9px rgba(32,199,237,.08); }
+body:not(.theme-light) .input-box { background: #0d2c4f; color: #9db4cc; box-shadow: inset 2px 2px 5px rgba(0,0,0,.35), inset -2px -2px 5px rgba(32,199,237,.06); }
+body:not(.theme-light) .input-box:focus-within { border-color: #20c7ed; box-shadow: 0 0 0 3px rgba(32,199,237,.2), inset 2px 2px 5px rgba(0,0,0,.35); }
+body:not(.theme-light) .input-box input { color: #eef6fc; }
+body:not(.theme-light) .input-box input::placeholder { color: #5f7a94; }
+body:not(.theme-light) .eye-button { color: #8fa9c2; }
+body:not(.theme-light) .remember { color: #9db4cc; }
+body:not(.theme-light) .forgot { color: #5fd4f2; }
+body:not(.theme-light) .separator { color: #5f7a94; }
+body:not(.theme-light) .separator span { background: #24466a; }
+body:not(.theme-light) .social { background: #0d2c4f; box-shadow: 5px 5px 10px rgba(0,0,0,.35), -5px -5px 10px rgba(32,199,237,.06); }
+body:not(.theme-light) .social:hover { box-shadow: 5px 5px 10px rgba(0,0,0,.35), 0 0 0 3px rgba(32,199,237,.3); }
+body:not(.theme-light) footer { color: #8fa9c2; }
+body:not(.theme-light) footer span { background: #24466a; }
+
+@media (prefers-reduced-motion: reduce) {
+  .login-card, .header, .circle-1, .circle-2, .circle-3, .circle-4 { animation: none!important; }
+}
