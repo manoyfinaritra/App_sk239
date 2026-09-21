@@ -78,6 +78,38 @@ CREATE TABLE `users` (
 INSERT INTO `users` (`id`, `email`, `motdepasse`) VALUES
 (1, 'manoyfinaritra@gmail.com', '$2y$10$khROo1AZLNBXr6o4lvt/oegfnN23xVnxZFpaBcOD4VO1dr/eOQjpW');
 
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `rapport`
+-- Un enregistrement = un événement d'alarme exporté.
+-- Remplace le stockage localStorage "ctm-exported-reports".
+-- Champs mappés depuis Liste.jsx onReportExport :
+--   titre        <- titre_export
+--   date_rapport <- rapportLe (datetime-local)
+--   site         <- row.nom
+--   acct         <- row.acct
+--   call_no      <- row.numeros
+--   detector     <- row.detct
+--   alarm_info   <- responsables[index]
+--   alarm_time   <- row.date
+--   handle_remark<- row.negativeAlarm
+--
+
+CREATE TABLE `rapport` (
+  `id` int(11) NOT NULL,
+  `titre` varchar(255) NOT NULL,
+  `date_rapport` datetime DEFAULT NULL,
+  `site` varchar(255) NOT NULL,
+  `acct` varchar(20) DEFAULT NULL,
+  `call_no` varchar(30) DEFAULT NULL,
+  `detector` varchar(20) DEFAULT NULL,
+  `alarm_info` text DEFAULT NULL,
+  `alarm_time` varchar(30) DEFAULT NULL,
+  `handle_remark` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 --
 -- Index pour les tables déchargées
 --
@@ -95,6 +127,14 @@ ALTER TABLE `users`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Index pour la table `rapport`
+--
+ALTER TABLE `rapport`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_rapport_date` (`date_rapport`),
+  ADD KEY `idx_rapport_site` (`site`);
+
+--
 -- AUTO_INCREMENT pour les tables déchargées
 --
 
@@ -109,6 +149,12 @@ ALTER TABLE `site`
 --
 ALTER TABLE `users`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT pour la table `rapport`
+--
+ALTER TABLE `rapport`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

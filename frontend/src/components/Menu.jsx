@@ -1,32 +1,42 @@
 import { Button, Modal } from 'react-bootstrap'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import ExcelJS from 'exceljs'
 import { saveAs } from 'file-saver'
 
-function Menu({ theme, setTheme, onNewReport, reports, onDeleteReportEvents, users, handleLogout, page, onShowAdministration }) {
+function Menu({ theme, setTheme, onNewReport, reports, onDeleteReportEvents, onRefreshReports, users, handleLogout, page, onShowAdministration }) {
   const isLight = theme === 'light'
   const [showReports, setShowReports] = useState(false)
   const [selectedDate, setSelectedDate] = useState('')
+  const [selectedSite, setSelectedSite] = useState('')
 
+  // Noms de sites distincts pour le filtre par banque.
+  const siteOptions = useMemo(() => [...new Set((reports || []).map(event => event.site || event.title || 'Site non renseigné'))].sort((a, b) => a.localeCompare(b)), [reports])
 
+  // `reports` = événements plats venus de la table `rapport` (1 ligne = 1 alarme).
+  const reportEvents = useMemo(() => (reports || []).filter(event => {
+    const date = (event.date_rapport || event.reportDate || event.alarm_time || event.alarmTime || '').slice(0, 10) || ''
+    const site = event.site || event.title || 'Site non renseigné'
+    return (!selectedDate || date === selectedDate) && (!selectedSite || site === selectedSite)
+  }).map(event => ({
+    ...event,
+    site: event.site || event.title || 'Site non renseigné',
+    acct: event.acct ?? '',
+    callNo: event.call_no ?? event.callNo ?? event.CallNO ?? '',
+    detector: event.detector ?? event.Detector ?? '',
+    alarmInfo: event.alarm_info ?? event.alarmInfo ?? event.AlarmInfo ?? '',
+    alarmTime: event.alarm_time ?? event.alarmTime ?? event.AlarmTime ?? (event.date_rapport || '').replace('T', ' '),
+    reportDate: event.date_rapport || event.reportDate || '',
+    negativeAlarm: event.handle_remark ?? event.handleRemark ?? event.negativeAlarm ?? '',
+    handleRemark: event.handle_remark ?? event.handleRemark ?? event.negativeAlarm ?? '',
+    dbId: event.dbId ?? event.id,
+    id: event.id,
+    reportId: event.id,
+    rowIndex: event.id
+  })), [reports, selectedDate, selectedSite])
 
-  const reportEvents = useMemo(() => reports.filter(report => {
-    const date = report.reportDate?.slice(0, 10) || ''
-    return !selectedDate || date === selectedDate
-  }).flatMap(report => report.rows.map((row, rowIndex) => ({
-    ...row,
-    site: row.site || report.title || 'Site non renseigné',
-    acct: row.acct ?? row.Acct ?? '',
-    callNo: row.callNo ?? row.CallNO ?? '',
-    detector: row.detector ?? row.Detector ?? '',
-    alarmInfo: row.alarmInfo ?? row.AlarmInfo ?? '',
-    alarmTime: row.alarmTime ?? row.AlarmTime ?? '',
-    reportDate: report.reportDate,
-    negativeAlarm: row.negativeAlarm ?? row.negativeAlarm ?? '',
-    id: `${report.id}-${rowIndex}`,
-    reportId: report.id,
-    rowIndex
-  }))), [reports, selectedDate])
+  useEffect(() => {
+    if (showReports) onRefreshReports?.()?.catch(() => {})
+  }, [showReports])
   const eventsBySite = useMemo(() => reportEvents.reduce((groups, event) => {
     groups[event.site] = [...(groups[event.site] || []), event]
     return groups
@@ -99,15 +109,22 @@ function Menu({ theme, setTheme, onNewReport, reports, onDeleteReportEvents, use
     worksheet.views = [{ state: 'frozen', ySplit: 2 }]
     worksheet.printArea = `A1:F${worksheet.rowCount}`
     const buffer = await workbook.xlsx.writeBuffer()
-    saveAs(new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }), `Rapports_${selectedDate}.xlsx`)
+    const safeSite = selectedSite.replace(/[\\/:*?"<>|]/g, '_').replace(/\s+/g, ' ').trim()
+    saveAs(new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }), `Rapports_${selectedDate}${safeSite ? `_${safeSite}` : ''}.xlsx`)
   }
 
-  const handleDeleteSite = (events) => {
+  const handleDeleteSite = async (events) => {
     if (!events.length) return
 
     const site = events[0].site
     const confirmed = window.confirm(`Supprimer les ${events.length} événement(s) de « ${site} » pour la date affichée ?`)
-    if (confirmed) onDeleteReportEvents(events)
+    if (!confirmed) return
+    try {
+      await onDeleteReportEvents(events)
+    } catch (error) {
+      console.error(error)
+      window.alert(error?.message || 'Suppression impossible.')
+    }
   }
   return (
     <>
@@ -145,14 +162,22 @@ function Menu({ theme, setTheme, onNewReport, reports, onDeleteReportEvents, use
               <label htmlFor='report-date'>Date du rapport</label>
               <input id='report-date' type='date' value={selectedDate} onChange={event => setSelectedDate(event.target.value)} />
             </div>
+            <div>
+              <label htmlFor='report-site'>Nom du site</label>
+              <select id='report-site' value={selectedSite} onChange={event => setSelectedSite(event.target.value)}>
+                <option value=''>Tous les sites</option>
+                {siteOptions.map(site => <option key={site} value={site}>{site}</option>)}
+              </select>
+            </div>
             {selectedDate && <Button variant='outline-secondary' size='sm' onClick={() => setSelectedDate('')}>Toutes les dates</Button>}
+            {selectedSite && <Button variant='outline-secondary' size='sm' onClick={() => setSelectedSite('')}>Tous les sites</Button>}
             <span className='history-result'>{reportEvents.length} événement{reportEvents.length !== 1 ? 's' : ''}</span>
             {<Button title={'Vous devez filtrer par date'} disabled={!selectedDate} className='history-export' size='sm' onClick={handleExportByDate}><i className='bi bi-file-earmark-spreadsheet me-1'></i>Exporter en Excel</Button>}
           </div>
           {reportEvents.length === 0 ?
             <div className='history-empty'>
               <i className='bi bi-folder2-open'></i>
-              <p>{reports.length ? 'Aucun événement ne correspond à cette date.' : 'Aucun rapport exporté pour le moment.'}</p></div> : (
+              <p>{reports.length ? 'Aucun événement ne correspond à ces filtres.' : 'Aucun rapport exporté pour le moment.'}</p></div> : (
               <div className='site-report-list'>{Object.entries(eventsBySite).map(([site, events]) => <section className='site-report-card' key={site}>
                 <div className='site-report-title'>
                   <div>

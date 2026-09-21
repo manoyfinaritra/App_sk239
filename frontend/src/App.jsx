@@ -10,7 +10,6 @@ import Login from '../Login'
 import Api from './components/Api'
 import Spinner from 'react-bootstrap/Spinner';
 import Swal from 'sweetalert2'
-const REPORTS_STORAGE_KEY = 'ctm-exported-reports'
 
 function App() {
 
@@ -36,35 +35,37 @@ function App() {
       return null
     }
   })
-  const [savedReports, setSavedReports] = useState(() => {
-    try {
-      return JSON.parse(localStorage.getItem(REPORTS_STORAGE_KEY)) || []
-    } catch {
-      return []
-    }
-  })
+  // Événements de rapports stockés en base (table `rapport`), 1 ligne = 1 alarme exportée.
+  const [savedReports, setSavedReports] = useState([])
 
   useEffect(() => {
     document.body.classList.toggle('theme-light', theme === 'light')
   }, [theme])
 
-  useEffect(() => {
-    localStorage.setItem(REPORTS_STORAGE_KEY, JSON.stringify(savedReports))
-  }, [savedReports])
+  const fetchReports = () => Api.get('data.php', { params: { action: 'getReports' } })
+    .then((response) => {
+      if (response.data.success) setSavedReports(response.data.reports || [])
+      else console.error(response.data.message || 'Impossible de récupérer les rapports.')
+    })
+    .catch((error) => console.error('Erreur lors de la récupération des rapports :', error))
 
-  const handleReportExport = (report) => {
-    setSavedReports(previousReports => [report, ...previousReports])
+  const handleReportExport = async (report) => {
+    const response = await Api.post('data.php', {
+      action: 'saveReport',
+      titre: report.titre || report.title || 'Rapport',
+      date_rapport: report.date_rapport || report.reportDate || '',
+      rows: report.rows || [],
+    })
+    if (!response.data.success) throw new Error(response.data.message || 'Enregistrement du rapport impossible.')
+    await fetchReports()
   }
 
-  const handleDeleteReportEvents = (eventsToDelete) => {
-    const eventKeys = new Set(eventsToDelete.map(event => `${event.reportId}-${event.rowIndex}`))
-    setSavedReports(previousReports => previousReports
-      .map(report => {
-        const rows = report.rows.filter((_, rowIndex) => !eventKeys.has(`${report.id}-${rowIndex}`))
-        return { ...report, rows, count: rows.length }
-      })
-      .filter(report => report.rows.length > 0)
-    )
+  const handleDeleteReportEvents = async (eventsToDelete) => {
+    const ids = (eventsToDelete || []).map((event) => event.dbId ?? event.id).filter((id) => Number.isInteger(id) ? id > 0 : Number(id) > 0)
+    if (!ids.length) return
+    const response = await Api.post('data.php', { action: 'deleteReportEvents', ids })
+    if (!response.data.success) throw new Error(response.data.message || 'Suppression impossible.')
+    await fetchReports()
   }
 
   const handleNewReport = () => {
@@ -99,9 +100,13 @@ function App() {
     .catch((error) => console.error('Erreur lors de la récupération des sites :', error))
 
   useEffect(() => {
-    const request = fetchSites()
-    request.finally(() => setChargement(false))
-    return () => request?.catch(() => {})
+    const sitesRequest = fetchSites()
+    const reportsRequest = fetchReports()
+    Promise.allSettled([sitesRequest, reportsRequest]).finally(() => setChargement(false))
+    return () => {
+      sitesRequest?.catch(() => {})
+      reportsRequest?.catch(() => {})
+    }
   }, [])
 
  /* const sites = [
@@ -306,6 +311,7 @@ function App() {
         onNewReport={handleNewReport}
         reports={savedReports}
         onDeleteReportEvents={handleDeleteReportEvents}
+        onRefreshReports={fetchReports}
         users={users}
         handleLogout={handleLogout}
         page={page}

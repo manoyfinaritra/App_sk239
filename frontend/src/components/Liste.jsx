@@ -39,14 +39,15 @@ function Liste({
       confirmButtonText: "Oui"
     })
     if (result.isConfirmed) {
+      try {
         const exportedRows = await exportExcel()
         if (!exportedRows) return
 
-        onReportExport({
-          id: `${rapportLe || 'sans-date'}-${allStock.map(row => `${row.acct}-${row.detct}`).join('_')}`,
+        await onReportExport({
+          titre: titre_export || 'Rapport',
           title: titre_export || 'Rapport',
+          date_rapport: rapportLe || allStock[0]?.date || '',
           reportDate: rapportLe || allStock[0]?.date || '',
-          exportedAt: new Date().toISOString(),
           rows: allStock.map((row, index) => ({
             site: row.nom || 'Site non renseigné',
             acct: row.acct || '',
@@ -54,6 +55,7 @@ function Liste({
             detector: row.detct || '',
             alarmInfo: responsables[index] || '',
             alarmTime: row.date ? row.date.replace('T', ' ') : '',
+            handleRemark: row.negativeAlarm || "",
             negativeAlarm : row.negativeAlarm || ""
           })),
           count: exportedRows.length
@@ -61,6 +63,7 @@ function Liste({
 
         Swal.fire({
           title: "Exportation réussie !",
+          text: "Rapport enregistré en base de données.",
           icon: "success",
           draggable: true
         });
@@ -69,6 +72,14 @@ function Liste({
         setTitreExport("Rapport")
         setAllstock([])
         setIsfinish(false)
+      } catch (error) {
+        console.error(error)
+        Swal.fire({
+          title: "Erreur",
+          text: error?.message || "Export Excel fait, mais enregistrement en base impossible.",
+          icon: "error"
+        });
+      }
     }
   }
 

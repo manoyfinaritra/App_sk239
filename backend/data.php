@@ -117,6 +117,85 @@ try {
         respond(['success' => true, 'message' => 'Site supprimé.']);
     }
 
+    // ============================================================
+    // RAPPORTS : stockage en base (remplace localStorage)
+    // Table `rapport` : 1 ligne = 1 événement d'alarme exporté.
+    // ============================================================
+
+    $toDatetime = static function ($value): ?string {
+        $value = trim((string) ($value ?? ''));
+        if ($value === '') return null;
+        // datetime-local "2026-09-16T19:14" -> "2026-09-16 19:14:00"
+        $value = str_replace('T', ' ', $value);
+        if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $value)) return $value . ' 00:00:00';
+        if (preg_match('/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/', $value)) return $value . ':00';
+        if (preg_match('/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/', $value)) return $value;
+        return $value;
+    };
+
+    if ($action === 'getReports') {
+        $date = trim((string) ($_GET['date'] ?? $data['date'] ?? ''));
+        if ($date !== '' && preg_match('/^\d{4}-\d{2}-\d{2}/', $date)) {
+            $day = substr($date, 0, 10);
+            $stmt = $db->prepare('SELECT id, titre, date_rapport, site, acct, call_no, detector, alarm_info, alarm_time, handle_remark, created_at FROM rapport WHERE DATE(date_rapport) = ? ORDER BY date_rapport DESC, site ASC, id ASC');
+            $stmt->execute([$day]);
+        } else {
+            $stmt = $db->query('SELECT id, titre, date_rapport, site, acct, call_no, detector, alarm_info, alarm_time, handle_remark, created_at FROM rapport ORDER BY date_rapport DESC, site ASC, id ASC');
+        }
+        respond(['success' => true, 'reports' => $stmt->fetchAll()]);
+    }
+
+    if ($action === 'saveReport') {
+        $titre = trim((string) ($data['titre'] ?? $data['title'] ?? 'Rapport'));
+        if ($titre === '') $titre = 'Rapport';
+        $dateRapport = $toDatetime($data['date_rapport'] ?? $data['reportDate'] ?? null);
+        $rows = $data['rows'] ?? [];
+        if (!is_array($rows) || count($rows) === 0) respond(['success' => false, 'message' => 'Aucune ligne de rapport à enregistrer.'], 422);
+        $stmt = $db->prepare('INSERT INTO rapport (titre, date_rapport, site, acct, call_no, detector, alarm_info, alarm_time, handle_remark) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)');
+        $db->beginTransaction();
+        $count = 0;
+        foreach ($rows as $row) {
+            if (!is_array($row)) continue;
+            $site = trim((string) ($row['site'] ?? 'Site non renseigné'));
+            if ($site === '') $site = 'Site non renseigné';
+            $stmt->execute([
+                $titre,
+                $dateRapport,
+                $site,
+                trim((string) ($row['acct'] ?? '')),
+                trim((string) ($row['callNo'] ?? $row['call_no'] ?? '')),
+                trim((string) ($row['detector'] ?? '')),
+                trim((string) ($row['alarmInfo'] ?? $row['alarm_info'] ?? '')),
+                trim((string) ($row['alarmTime'] ?? $row['alarm_time'] ?? '')),
+                trim((string) ($row['handleRemark'] ?? $row['handle_remark'] ?? $row['negativeAlarm'] ?? '')),
+            ]);
+            $count++;
+        }
+        $db->commit();
+        if ($count === 0) respond(['success' => false, 'message' => 'Aucune ligne de rapport à enregistrer.'], 422);
+        respond(['success' => true, 'message' => 'Rapport enregistré en base.', 'count' => $count]);
+    }
+
+    if ($action === 'deleteReportEvents') {
+        $ids = $data['ids'] ?? [];
+        if (!is_array($ids)) $ids = [$ids];
+        $ids = array_values(array_filter(array_map(static fn($v) => filter_var($v, FILTER_VALIDATE_INT), $ids), static fn($v) => $v !== false && $v > 0));
+        if (count($ids) === 0) respond(['success' => false, 'message' => 'Aucun événement à supprimer.'], 422);
+        $placeholders = implode(',', array_fill(0, count($ids), '?'));
+        $stmt = $db->prepare("DELETE FROM rapport WHERE id IN ($placeholders)");
+        $stmt->execute($ids);
+        respond(['success' => true, 'message' => 'Événement(s) supprimé(s).', 'deleted' => $stmt->rowCount()]);
+    }
+
+    if ($action === 'deleteSiteEvents') {
+        $site = trim((string) ($data['site'] ?? ''));
+        $date = substr(trim((string) ($data['date'] ?? '')), 0, 10);
+        if ($site === '' || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)) respond(['success' => false, 'message' => 'Site et date (AAAA-MM-JJ) requis.'], 422);
+        $stmt = $db->prepare('DELETE FROM rapport WHERE site = ? AND DATE(date_rapport) = ?');
+        $stmt->execute([$site, $date]);
+        respond(['success' => true, 'message' => 'Événement(s) du site supprimé(s).', 'deleted' => $stmt->rowCount()]);
+    }
+
     respond(['success' => false, 'message' => 'Action inconnue.'], 400);
 } catch (PDOException $exception) {
     error_log($exception->getMessage());
