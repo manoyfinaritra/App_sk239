@@ -45,10 +45,10 @@ body.theme-light .app-panel { background:rgba(255,255,255,.78); border-color:#b7
   .sidebar-brand small { display:none; }
   .sidebar-nav { min-width:max-content; }
   .sidebar-link { min-width:2.65rem; min-height:2.65rem; }
-  .sidebar-bottom { flex:none; }
-  .sidebar-bottom .sidebar-link { padding:.35rem; }
-  .sidebar-bottom .sidebar-link > div { flex-direction:row!important; gap:.25rem!important; }
-  .sidebar-bottom .sidebar-link span { display:none; }
+  .sidebar-bottom { display:flex; flex:none; gap:.35rem; }
+  .sidebar-bottom .sidebar-action { min-width:2.65rem; min-height:2.65rem; justify-content:center; padding:.5rem; }
+  .sidebar-bottom .sidebar-action span { display:none; }
+  .sidebar-bottom .sidebar-action i { margin:0; font-size:1.05rem; }
   .app-shell { padding:.5rem!important; }
   .app-panel { min-height:calc(100vh - 4.25rem); border-radius:.8rem!important; }
   .section-card { border-radius:.8rem; }
@@ -196,4 +196,19 @@ body.theme-light .sidebar-bottom .bg-danger { box-shadow: 0 4px 12px rgba(220,53
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none!important; transition: none!important; }
+}
+
+/* ==========================================================
+   BOUTONS PARAMÈTRES : mode clair/sombre + déconnexion
+   ========================================================== */
+.sidebar-bottom { display: grid; gap: .3rem; }
+.sidebar-action { cursor: pointer; }
+.sidebar-logout { background: linear-gradient(135deg,#e05260,#c81e3a)!important; color: #fff!important; font-weight: 700; box-shadow: 0 4px 12px rgba(220,53,69,.35); }
+.sidebar-logout:hover { filter: brightness(1.1); }
+
+/* Tablette : sidebar icônes seules, larges zones tactiles */
+@media (min-width:768px) and (max-width:1199.98px) {
+  .sidebar-bottom { gap: .5rem; }
+  .sidebar-bottom .sidebar-action { justify-content: center; padding: .8rem .4rem; min-height: 2.9rem; border-radius: .65rem; }
+  .sidebar-bottom .sidebar-action i { margin: 0; font-size: 1.15rem; }
 }

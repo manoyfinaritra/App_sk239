@@ -139,17 +139,11 @@ function Menu({ theme, setTheme, onNewReport, reports, onDeleteReportEvents, onR
         </nav>
         <div className='sidebar-bottom'>
           <p className='sidebar-label'>PARAMETRES</p>
-          <button type='button' className='sidebar-link' >
-            <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-              <div onClick={() => setTheme(isLight ? 'dark' : 'light')} className=' p-1'>
-                <i className={`bi bi-${isLight ? 'moon-stars' : 'sun'}`}></i> <span>Mode  {isLight ? 'sombre' : 'clair'}</span>
-              </div>
-
-              <div className=' bg-danger p-1 rounded fw-bold text-white' onClick={handleLogout}>
-                <i className='bi bi-power'></i> <span className=''>Deconnexion</span>
-              </div>
-
-            </div>
+          <button type='button' className='sidebar-link sidebar-action' onClick={() => setTheme(isLight ? 'dark' : 'light')} title={isLight ? 'Passer en mode sombre' : 'Passer en mode clair'}>
+            <i className={`bi bi-${isLight ? 'moon-stars' : 'sun'}`}></i><span>Mode {isLight ? 'sombre' : 'clair'}</span>
+          </button>
+          <button type='button' className='sidebar-link sidebar-action sidebar-logout' onClick={handleLogout} title='Se déconnecter'>
+            <i className='bi bi-power'></i><span>Deconnexion</span>
           </button>
         </div>
       </aside>
