@@ -1,4 +1,5 @@
-import { Row, Col, Button } from 'react-bootstrap'
+import { Row, Col, Button, Spinner } from 'react-bootstrap'
+import { useState } from 'react'
 import Swal from 'sweetalert2'
 import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
@@ -17,9 +18,14 @@ function Liste({
   setIsEdit,
   setIdModfi,
   rapportLe,
-  onReportExport
+  onReportExport,
+  isSavingReport = false
 
 }) {
+
+  // Chargement affiché jusqu'à la fin de l'export + enregistrement en base.
+  const [exporting, setExporting] = useState(false)
+  const isBusy = exporting || isSavingReport
 
 
 
@@ -39,6 +45,14 @@ function Liste({
       confirmButtonText: "Oui"
     })
     if (result.isConfirmed) {
+      setExporting(true)
+      Swal.fire({
+        title: "Exportation en cours...",
+        text: "Génération du fichier Excel et enregistrement en base.",
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        didOpen: () => Swal.showLoading(),
+      })
       try {
         const exportedRows = await exportExcel()
         if (!exportedRows) return
@@ -79,6 +93,9 @@ function Liste({
           text: error?.message || "Export Excel fait, mais enregistrement en base impossible.",
           icon: "error"
         });
+      } finally {
+        setExporting(false)
+        if (Swal.isLoading()) Swal.close()
       }
     }
   }
@@ -336,7 +353,7 @@ function Liste({
 
         <div className='d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3 mb-3'>
           <div><h2 className='section-title mb-1'><i className="bi bi-bank me-2 text-info"></i>{titre_export.replace(/T\d{2}([:_])\d{2}.*$/, "")}</h2><p className='section-subtitle mb-0'>{allStock.length} alarme{allStock.length !== 1 ? 's' : ''} enregistrée{allStock.length !== 1 ? 's' : ''}</p></div>
-          <Button className='btnsuccess align-self-start align-self-sm-auto' size='sm' disabled={allStock.length === 0} onClick={handleExortExcel}>Exporter Excel <i className="bi bi-file-earmark-spreadsheet ms-1"></i></Button>
+          <Button className='btnsuccess align-self-start align-self-sm-auto' size='sm' disabled={allStock.length === 0 || isBusy} onClick={handleExortExcel}>{isBusy ? (<><Spinner as="span" animation="border" size="sm" role="status" className='me-1' />Export en cours...</>) : (<>Exporter Excel <i className="bi bi-file-earmark-spreadsheet ms-1"></i></>)}</Button>
         </div>
 
         <div className='report-table-wrap'>

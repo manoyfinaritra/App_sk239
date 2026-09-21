@@ -1,11 +1,17 @@
 import { useEffect, useState } from "react";
-import { Button, Form, Table, Modal } from "react-bootstrap";
+import { Button, Form, Table, Modal, Spinner } from "react-bootstrap";
 import Swal from "sweetalert2";
 import Api from "./Api";
 
 function Administration({ onSitesChanged }) {
 
     const [sites, setSites] = useState([]);
+
+    // Chargements : un par action CRUD, affichés jusqu'à la fin de l'action.
+    const [loadingSites, setLoadingSites] = useState(true);
+    const [saving, setSaving] = useState(false);
+    const [updating, setUpdating] = useState(false);
+    const [deletingId, setDeletingId] = useState(null);
 
     const [acct, setAcct] = useState("");
     const [nom, setNom] = useState("");
@@ -24,14 +30,18 @@ function Administration({ onSitesChanged }) {
     // RECUPERER LES SITES
     // ============================================================
 
-    const getSites = () => Api.get("data.php", { params: { action: "getSites" } })
-        .then((response) => {
-            if (response.data.success) setSites(response.data.sites);
-            else throw new Error(response.data.message || "Impossible de récupérer les sites.");
-        })
-        .catch((error) => {
-            console.error("Erreur récupération sites :", error);
-        });
+    const getSites = () => {
+        setLoadingSites(true);
+        return Api.get("data.php", { params: { action: "getSites" } })
+            .then((response) => {
+                if (response.data.success) setSites(response.data.sites);
+                else throw new Error(response.data.message || "Impossible de récupérer les sites.");
+            })
+            .catch((error) => {
+                console.error("Erreur récupération sites :", error);
+            })
+            .finally(() => setLoadingSites(false));
+    }
 
 
     // ============================================================
@@ -82,6 +92,7 @@ function Administration({ onSitesChanged }) {
         }
 
 
+        setSaving(true);
         try {
 
             const response = await Api.post(
@@ -133,6 +144,8 @@ function Administration({ onSitesChanged }) {
                 icon: "error"
             });
 
+        } finally {
+            setSaving(false);
         }
 
     };
@@ -166,6 +179,7 @@ function Administration({ onSitesChanged }) {
 
         e.preventDefault();
 
+        setUpdating(true);
         try {
 
             const response = await Api.post(
@@ -221,6 +235,8 @@ function Administration({ onSitesChanged }) {
                 icon: "error"
             });
 
+        } finally {
+            setUpdating(false);
         }
 
     };
@@ -254,6 +270,7 @@ function Administration({ onSitesChanged }) {
         }
 
 
+        setDeletingId(id);
         try {
 
             const response = await Api.post(
@@ -296,6 +313,8 @@ function Administration({ onSitesChanged }) {
                 icon: "error"
             });
 
+        } finally {
+            setDeletingId(null);
         }
 
     };
@@ -473,11 +492,20 @@ function Administration({ onSitesChanged }) {
                         <Button
                             type="submit"
                             variant="primary"
+                            disabled={saving}
                         >
 
-                            <i className="bi bi-plus-lg me-2"></i>
-
-                            Ajouter le site
+                            {saving ? (
+                                <>
+                                    <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" className="me-2" />
+                                    Ajout en cours...
+                                </>
+                            ) : (
+                                <>
+                                    <i className="bi bi-plus-lg me-2"></i>
+                                    Ajouter le site
+                                </>
+                            )}
 
                         </Button>
 
@@ -543,7 +571,21 @@ function Administration({ onSitesChanged }) {
 
                             <tbody>
 
-                                {sites.length > 0 ? (
+                                {loadingSites ? (
+
+                                    <tr>
+
+                                        <td
+                                            colSpan="8"
+                                            className="text-center p-4"
+                                        >
+                                            <Spinner animation="border" variant="primary" role="status" className="me-2" />
+                                            Chargement des sites...
+                                        </td>
+
+                                    </tr>
+
+                                ) : sites.length > 0 ? (
 
                                     sites.map((site) => (
 
@@ -582,6 +624,7 @@ function Administration({ onSitesChanged }) {
                                                     <Button
                                                         variant="warning"
                                                         size="sm"
+                                                        disabled={deletingId === site.id || updating}
                                                         onClick={() =>
                                                             handleEdit(site)
                                                         }
@@ -595,12 +638,17 @@ function Administration({ onSitesChanged }) {
                                                     <Button
                                                         variant="danger"
                                                         size="sm"
+                                                        disabled={deletingId === site.id}
                                                         onClick={() =>
                                                             handleDelete(site.id)
                                                         }
                                                     >
 
-                                                        <i className="bi bi-trash"></i>
+                                                        {deletingId === site.id ? (
+                                                            <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                                                        ) : (
+                                                            <i className="bi bi-trash"></i>
+                                                        )}
 
                                                     </Button>
 
@@ -779,6 +827,7 @@ function Administration({ onSitesChanged }) {
 
                         <Button
                             variant="secondary"
+                            disabled={updating}
                             onClick={() =>
                                 setShowModal(false)
                             }
@@ -792,11 +841,20 @@ function Administration({ onSitesChanged }) {
                         <Button
                             variant="primary"
                             type="submit"
+                            disabled={updating}
                         >
 
-                            <i className="bi bi-check-lg me-2"></i>
-
-                            Enregistrer
+                            {updating ? (
+                                <>
+                                    <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" className="me-2" />
+                                    Enregistrement...
+                                </>
+                            ) : (
+                                <>
+                                    <i className="bi bi-check-lg me-2"></i>
+                                    Enregistrer
+                                </>
+                            )}
 
                         </Button>
 

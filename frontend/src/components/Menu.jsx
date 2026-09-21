@@ -1,13 +1,17 @@
-import { Button, Modal } from 'react-bootstrap'
+import { Button, Modal, Spinner } from 'react-bootstrap'
 import { useEffect, useMemo, useState } from 'react'
 import ExcelJS from 'exceljs'
 import { saveAs } from 'file-saver'
 
-function Menu({ theme, setTheme, onNewReport, reports, onDeleteReportEvents, onRefreshReports, users, handleLogout, page, onShowAdministration }) {
+function Menu({ theme, setTheme, onNewReport, reports, onDeleteReportEvents, onRefreshReports, users, handleLogout, page, onShowAdministration, isDeletingReports = false, isSavingReport = false }) {
   const isLight = theme === 'light'
   const [showReports, setShowReports] = useState(false)
   const [selectedDate, setSelectedDate] = useState('')
   const [selectedSite, setSelectedSite] = useState('')
+  // Chargements affichés jusqu'à la fin de chaque action base.
+  const [refreshing, setRefreshing] = useState(false)
+  const [deletingSite, setDeletingSite] = useState('')
+  const [exporting, setExporting] = useState(false)
 
   // Noms de sites distincts pour le filtre par banque.
   const siteOptions = useMemo(() => [...new Set((reports || []).map(event => event.site || event.title || 'Site non renseigné'))].sort((a, b) => a.localeCompare(b)), [reports])
@@ -35,7 +39,10 @@ function Menu({ theme, setTheme, onNewReport, reports, onDeleteReportEvents, onR
   })), [reports, selectedDate, selectedSite])
 
   useEffect(() => {
-    if (showReports) onRefreshReports?.()?.catch(() => {})
+    if (showReports) {
+      setRefreshing(true)
+      onRefreshReports?.()?.catch(() => {}).finally(() => setRefreshing(false))
+    }
   }, [showReports])
   const eventsBySite = useMemo(() => reportEvents.reduce((groups, event) => {
     groups[event.site] = [...(groups[event.site] || []), event]
@@ -43,6 +50,8 @@ function Menu({ theme, setTheme, onNewReport, reports, onDeleteReportEvents, onR
   }, {}), [reportEvents])
 
   const handleExportByDate = async () => {
+    setExporting(true)
+    try {
     const workbook = new ExcelJS.Workbook()
     const worksheet = workbook.addWorksheet('Rapports')
     worksheet.properties.pageSetUpPr = { fitToPage: true, autoPageBreaks: false }
@@ -111,6 +120,9 @@ function Menu({ theme, setTheme, onNewReport, reports, onDeleteReportEvents, onR
     const buffer = await workbook.xlsx.writeBuffer()
     const safeSite = selectedSite.replace(/[\\/:*?"<>|]/g, '_').replace(/\s+/g, ' ').trim()
     saveAs(new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }), `Rapports_${selectedDate}${safeSite ? `_${safeSite}` : ''}.xlsx`)
+    } finally {
+      setExporting(false)
+    }
   }
 
   const handleDeleteSite = async (events) => {
@@ -119,11 +131,14 @@ function Menu({ theme, setTheme, onNewReport, reports, onDeleteReportEvents, onR
     const site = events[0].site
     const confirmed = window.confirm(`Supprimer les ${events.length} événement(s) de « ${site} » pour la date affichée ?`)
     if (!confirmed) return
+    setDeletingSite(site)
     try {
       await onDeleteReportEvents(events)
     } catch (error) {
       console.error(error)
       window.alert(error?.message || 'Suppression impossible.')
+    } finally {
+      setDeletingSite('')
     }
   }
   return (
@@ -165,8 +180,8 @@ function Menu({ theme, setTheme, onNewReport, reports, onDeleteReportEvents, onR
             </div>
             {selectedDate && <Button variant='outline-secondary' size='sm' onClick={() => setSelectedDate('')}>Toutes les dates</Button>}
             {selectedSite && <Button variant='outline-secondary' size='sm' onClick={() => setSelectedSite('')}>Tous les sites</Button>}
-            <span className='history-result'>{reportEvents.length} événement{reportEvents.length !== 1 ? 's' : ''}</span>
-            {<Button title={'Vous devez filtrer par date'} disabled={!selectedDate} className='history-export' size='sm' onClick={handleExportByDate}><i className='bi bi-file-earmark-spreadsheet me-1'></i>Exporter en Excel</Button>}
+            <span className='history-result'>{refreshing ? (<span className='d-inline-flex align-items-center gap-2'><Spinner as="span" animation="border" size="sm" role="status" />Chargement...</span>) : (<>{reportEvents.length} événement{reportEvents.length !== 1 ? 's' : ''}</>)}{isDeletingReports && ' • Suppression en cours...'}{isSavingReport && ' • Enregistrement en cours...'}</span>
+            {<Button title={'Vous devez filtrer par date'} disabled={!selectedDate || exporting} className='history-export' size='sm' onClick={handleExportByDate}>{exporting ? (<><Spinner as="span" animation="border" size="sm" role="status" className='me-1' />Export...</>) : (<><i className='bi bi-file-earmark-spreadsheet me-1'></i>Exporter en Excel</>)}</Button>}
           </div>
           {reportEvents.length === 0 ?
             <div className='history-empty'>
@@ -181,8 +196,8 @@ function Menu({ theme, setTheme, onNewReport, reports, onDeleteReportEvents, onR
                   </div>
                   <span className=' d-flex align-items-center gap-2'>
                     {events.length} événement{events.length !== 1 ? 's' : ''}
-                    <Button size='sm' variant='outline-danger' onClick={() => handleDeleteSite(events)} title={`Supprimer tous les événements du site "${site}"`}><span className='visually-hidden'>Supprimer</span>
-                      <i className='bi bi-trash'></i></Button>
+                    <Button size='sm' variant='outline-danger' disabled={deletingSite === site || isDeletingReports} onClick={() => handleDeleteSite(events)} title={`Supprimer tous les événements du site "${site}"`}><span className='visually-hidden'>Supprimer</span>
+                      {(deletingSite === site || (isDeletingReports && deletingSite === site)) ? <Spinner as="span" animation="border" size="sm" role="status" /> : <i className='bi bi-trash'></i>}</Button>
                   </span>
 
                 </div>

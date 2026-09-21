@@ -10,7 +10,8 @@ function Login(
     email,
     setEmail,
     handleSubmit,
-    message
+    message,
+    loginLoading = false
 
   }
 ) {
@@ -211,8 +212,16 @@ function Login(
             <button
               className="login-button"
               type="submit"
+              disabled={loginLoading}
             >
-              Se connecter
+              {loginLoading ? (
+                <span className="d-inline-flex align-items-center gap-2">
+                  <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                  Connexion...
+                </span>
+              ) : (
+                "Se connecter"
+              )}
             </button>
 
           </form>

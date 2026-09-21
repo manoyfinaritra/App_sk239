@@ -26,6 +26,9 @@ function App() {
   const [email, setEmail] = useState("")
   const [motdepasse, setMotdepasse] = useState("")
   const [chargement, setChargement] = useState(true)
+  const [loginLoading, setLoginLoading] = useState(false)
+  const [savingReport, setSavingReport] = useState(false)
+  const [deletingReports, setDeletingReports] = useState(false)
   const [sites, setSites] = useState([])
   const [page, setPage] = useState('report')
   const [users, setUsers] = useState(() => {
@@ -50,22 +53,32 @@ function App() {
     .catch((error) => console.error('Erreur lors de la récupération des rapports :', error))
 
   const handleReportExport = async (report) => {
-    const response = await Api.post('data.php', {
-      action: 'saveReport',
-      titre: report.titre || report.title || 'Rapport',
-      date_rapport: report.date_rapport || report.reportDate || '',
-      rows: report.rows || [],
-    })
-    if (!response.data.success) throw new Error(response.data.message || 'Enregistrement du rapport impossible.')
-    await fetchReports()
+    setSavingReport(true)
+    try {
+      const response = await Api.post('data.php', {
+        action: 'saveReport',
+        titre: report.titre || report.title || 'Rapport',
+        date_rapport: report.date_rapport || report.reportDate || '',
+        rows: report.rows || [],
+      })
+      if (!response.data.success) throw new Error(response.data.message || 'Enregistrement du rapport impossible.')
+      await fetchReports()
+    } finally {
+      setSavingReport(false)
+    }
   }
 
   const handleDeleteReportEvents = async (eventsToDelete) => {
     const ids = (eventsToDelete || []).map((event) => event.dbId ?? event.id).filter((id) => Number.isInteger(id) ? id > 0 : Number(id) > 0)
     if (!ids.length) return
-    const response = await Api.post('data.php', { action: 'deleteReportEvents', ids })
-    if (!response.data.success) throw new Error(response.data.message || 'Suppression impossible.')
-    await fetchReports()
+    setDeletingReports(true)
+    try {
+      const response = await Api.post('data.php', { action: 'deleteReportEvents', ids })
+      if (!response.data.success) throw new Error(response.data.message || 'Suppression impossible.')
+      await fetchReports()
+    } finally {
+      setDeletingReports(false)
+    }
   }
 
   const handleNewReport = () => {
@@ -207,7 +220,7 @@ function App() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setChargement(true)
+    setLoginLoading(true)
     const data = {
       action: "connexion",
       email: email,
@@ -246,7 +259,7 @@ function App() {
       );
 
     } finally {
-      setChargement(false);
+      setLoginLoading(false);
     }
   };
 
@@ -297,6 +310,7 @@ function App() {
           setEmail={setEmail}
           handleSubmit={handleSubmit}
           message={message}
+          loginLoading={loginLoading}
         />
       </>
     )
@@ -316,6 +330,8 @@ function App() {
         handleLogout={handleLogout}
         page={page}
         onShowAdministration={() => setPage('administration')}
+        isDeletingReports={deletingReports}
+        isSavingReport={savingReport}
       />
       <section className='app-shell p-2 p-md-4'>
         <Container fluid className='app-panel rounded-4 p-2 p-md-3'>
@@ -363,6 +379,7 @@ function App() {
             stock_detecteur={stock_detecteur}
             setIdModfi={setIdModfi}
             onReportExport={handleReportExport}
+            isSavingReport={savingReport}
           />
           </>}
 
