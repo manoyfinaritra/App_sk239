@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : localhost
--- Généré le : lun. 21 sep. 2026 à 09:13
+-- Généré le : lun. 21 sep. 2026 à 10:47
 -- Version du serveur : 10.4.32-MariaDB
 -- Version de PHP : 8.2.12
 
@@ -102,7 +102,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT pour la table `site`
 --
 ALTER TABLE `site`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT pour la table `users`
