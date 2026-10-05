@@ -148,7 +148,7 @@ function Menu({ theme, setTheme, onNewReport, reports, onDeleteReportEvents, onR
         <p className='sidebar-label'>RAPPORTS</p>
         <nav className='sidebar-nav' aria-label='Navigation principale'>
           <button className={`sidebar-link ${page === 'report' ? 'active' : ''}`} onClick={onNewReport}><i className='bi bi-file-earmark-plus'></i><span>Nouveau rapport</span></button>
-          <button className='sidebar-link' onClick={() => setShowReports(true)}><i className='bi bi-card-list'></i><span>Liste des rapports</span><b>{reports.length}</b></button>
+          <button className='sidebar-link' onClick={() => setShowReports(true)}><i className='bi bi-card-list'></i><span>Liste des rapports</span><b>{reports.length >= 999 ? '999+' : reports.length}</b></button>
           <button title='Gérer les sites (ajouter, modifier, supprimer)' className={`sidebar-link ${page === 'administration' ? 'active' : ''}`} onClick={onShowAdministration}><i className='bi bi-gear'></i><span>Administration</span></button>
 
         </nav>
@@ -180,13 +180,13 @@ function Menu({ theme, setTheme, onNewReport, reports, onDeleteReportEvents, onR
             </div>
             {selectedDate && <Button variant='outline-secondary' size='sm' onClick={() => setSelectedDate('')}>Toutes les dates</Button>}
             {selectedSite && <Button variant='outline-secondary' size='sm' onClick={() => setSelectedSite('')}>Tous les sites</Button>}
-            <span className='history-result'>{refreshing ? (<span className='d-inline-flex align-items-center gap-2'><Spinner as="span" animation="border" size="sm" role="status" />Chargement...</span>) : (<>{reportEvents.length} événement{reportEvents.length !== 1 ? 's' : ''}</>)}{isDeletingReports && ' • Suppression en cours...'}{isSavingReport && ' • Enregistrement en cours...'}</span>
+            <span className='history-result'>{refreshing ? (<span className='d-inline-flex align-items-center gap-2'><Spinner as="span" animation="border" size="sm" role="status" />Chargement...</span>) : (<>{reportEvents.length >= 999 ? '999+' : reportEvents.length} événement{reportEvents.length !== 1 ? 's' : ''}</>)}{isDeletingReports && ' • Suppression en cours...'}{isSavingReport && ' • Enregistrement en cours...'}</span>
             {<Button title={'Vous devez filtrer par date'} disabled={!selectedDate || exporting} className='history-export' size='sm' onClick={handleExportByDate}>{exporting ? (<><Spinner as="span" animation="border" size="sm" role="status" className='me-1' />Export...</>) : (<><i className='bi bi-file-earmark-spreadsheet me-1'></i>Exporter en Excel</>)}</Button>}
           </div>
           {reportEvents.length === 0 ?
             <div className='history-empty'>
               <i className='bi bi-folder2-open'></i>
-              <p>{reports.length ? 'Aucun événement ne correspond à ces filtres.' : 'Aucun rapport exporté pour le moment.'}</p></div> : (
+              <p>{reports.length >= 999 ? '999+' : reports.length} rapports exportés pour le moment.</p></div> : (
               <div className='site-report-list'>{Object.entries(eventsBySite).map(([site, events]) => <section className='site-report-card' key={site}>
                 <div className='site-report-title'>
                   <div>
@@ -195,7 +195,7 @@ function Menu({ theme, setTheme, onNewReport, reports, onDeleteReportEvents, onR
 
                   </div>
                   <span className=' d-flex align-items-center gap-2'>
-                    {events.length} événement{events.length !== 1 ? 's' : ''}
+                    {events.length >= 999 ? '999+' : events.length} événement{events.length !== 1 ? 's' : ''}
                     <Button size='sm' variant='outline-danger' disabled={deletingSite === site || isDeletingReports} onClick={() => handleDeleteSite(events)} title={`Supprimer tous les événements du site "${site}"`}><span className='visually-hidden'>Supprimer</span>
                       {(deletingSite === site || (isDeletingReports && deletingSite === site)) ? <Spinner as="span" animation="border" size="sm" role="status" /> : <i className='bi bi-trash'></i>}</Button>
                   </span>
